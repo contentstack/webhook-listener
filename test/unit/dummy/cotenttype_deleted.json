@@ -1,0 +1,47 @@
+{
+    "triggered_at": "2018-12-19T12:25:02.083Z",
+    "event": "delete",
+    "data": {
+      "options": {
+        "sub_title": [],
+        "title": "title",
+        "singleton": true,
+        "is_page": false
+      },
+      "schema": [
+        {
+          "multiple": false,
+          "field_metadata": {
+            "_default": true
+          },
+          "unique": true,
+          "mandatory": true,
+          "data_type": "text",
+          "uid": "title",
+          "display_name": "Title"
+        },
+        {
+          "unique": false,
+          "mandatory": false,
+          "multiple": true,
+          "field_metadata": {
+            "default_value": {
+              "url": "",
+              "title": ""
+            },
+            "description": ""
+          },
+          "uid": "footer_links",
+          "display_name": "Footer LInks",
+          "data_type": "link"
+        }
+      ],
+      "description": "",
+      "uid": "copy_of_footer",
+      "title": "copy_of_Footer",
+      "updated_at": "2018-12-19T12:24:50.201Z",
+      "created_at": "2018-12-19T12:24:46.731Z"
+    },
+    "api_key": "***REMOVED***",
+    "module": "content_type"
+  }
