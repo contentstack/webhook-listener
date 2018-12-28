@@ -1,0 +1,52 @@
+{
+    "triggered_at": "2018-12-13T09:07:33.085Z",
+    "event": "publish",
+    "data": {
+      "asset": {
+        "publish_details": {
+          "user": "sys_blt815d4d2116f9864d",
+          "time": "2018-12-13T09:07:32.443Z",
+          "locale": "en-us",
+          "environment": "blt95f102633167a7f3"
+        },
+        "title": "Above-White-Clouds-Wallpaper-1920x1200.jpg",
+        "_version": 1,
+        "parent_uid": null,
+        "is_dir": false,
+        "ACL": {},
+        "url": "https://images.contentstack.io/v3/assets/blte570a8fa36ad8689/blt581cf54091017f1f/5bb1f11c0ea0b7fa24000502/Above-White-Clouds-Wallpaper-1920x1200.jpg",
+        "filename": "Above-White-Clouds-Wallpaper-1920x1200.jpg",
+        "tags": [],
+        "file_size": "351829",
+        "content_type": "image/jpeg",
+        "updated_by": "sys_blt815d4d2116f9864d",
+        "created_by": "sys_blt815d4d2116f9864d",
+        "updated_at": "2018-10-01T10:04:12.701Z",
+        "created_at": "2018-10-01T10:04:12.701Z",
+        "uid": "blt581cf54091017f1f"
+      },
+      "locale": "en-us",
+      "status": "success",
+      "action": "publish",
+      "environment": {
+        "_version": 3,
+        "ACL": [],
+        "updated_at": "2018-11-25T20:58:25.728Z",
+        "created_at": "2018-10-19T14:22:44.322Z",
+        "updated_by": "sys_blt815d4d2116f9864d",
+        "created_by": "sys_blt815d4d2116f9864d",
+        "uid": "blt95f102633167a7f3",
+        "name": "development",
+        "urls": [
+          {
+            "locale": "en-us",
+            "url": ""
+          }
+        ],
+        "servers": [],
+        "deploy_content": false
+      }
+    },
+    "api_key": "blte570a8fa36ad8689",
+    "module": "asset"
+  }
