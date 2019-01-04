@@ -10,7 +10,7 @@ import { createServer } from "http";
 import BasicAuth from "basic-auth";
 import { debug as Debug } from "debug";
 import * as bodyParser from "body-parser";
-import { type } from "os";
+import LoggerBuilder from "./logger";
 
 const jsonParser = bodyParser.json();
 let _config: any = {};
@@ -18,9 +18,7 @@ let _notify: any;
 
 const debug = Debug("webhook:listener");
 
-
 const requestHandler = (request, response) => {
-  console.log("Request recived")
   try {
     //Should be a POST call.
     if (request.method && request.method !== "POST") {

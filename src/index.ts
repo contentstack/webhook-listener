@@ -10,8 +10,9 @@ import { debug as Debug } from "debug";
 import { createListener } from "./core";
 import { defaultConfig } from "./defaults";
 import { merge as _merge} from "lodash";
+import LoggerBuilder from "./logger";
 
-const debug = Debug("webhook:listener");
+const debug = Debug("webhook:liloggerstener");
 let notify;
 let config: any = {};
 
@@ -24,8 +25,9 @@ export function register(consumer: any) {
   return true;
 }
 
-export function start(userConfig) {
-  return new Promise((resolve, reject)=>{
+export function start(userConfig: any, customLogger?: any) {
+  var log = new LoggerBuilder(customLogger).Logger
+  return new Promise((resolve, reject)=> {
     debug("start called with %O", userConfig);
     //validateConfig(userConfig);
     // override default with user config
@@ -36,18 +38,18 @@ export function start(userConfig) {
       resetConfig();
       config = _merge(_defaultConfig, userConfig);
     } else {
-      console.log("Starting listener with default configs");
+      log.info("Starting listener with default configs");
       config = defaultConfig;
     }
     if (!notify) {
-      reject('`Aborting start of webhook listener, since no function is provided to notify.`')
-      throw new Error(`Aborting start of webhook listener, since no function is provided to notify.`)
+      log.error('Aborting start of webhook listener, since no function is provided to notify.')
+      reject(`Aborting start of webhook listener, since no function is provided to notify.`)
     } else {
       debug('starting with config: '+ JSON.stringify(config));
       let port = process.env.PORT || config.listener.port
       let server =  createListener(config, notify).listen(
         port, () => {
-          console.log(`Server running at port ${port}`);
+          log.info(`Server running at port ${port}`);
         }
       );  
       return resolve(server);
