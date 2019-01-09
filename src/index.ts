@@ -15,6 +15,7 @@ import LoggerBuilder from "./logger";
 const debug = Debug("webhook:liloggerstener");
 let notify;
 let config: any = {};
+let log;
 
 export function register(consumer: any) {
   if(typeof consumer !== "function") {
@@ -25,8 +26,13 @@ export function register(consumer: any) {
   return true;
 }
 
+// export function registerLogger(customLogger?: any) {
+//   log = new LoggerBuilder(customLogger).Logger
+// }
+
 export function start(userConfig: any, customLogger?: any) {
-  var log = new LoggerBuilder(customLogger).Logger
+  log = new LoggerBuilder(customLogger).Logger
+  
   return new Promise((resolve, reject)=> {
     debug("start called with %O", userConfig);
     //validateConfig(userConfig);
@@ -35,7 +41,7 @@ export function start(userConfig: any, customLogger?: any) {
       //reassiging to different variable as import caches config while running test cases
       //and provides old merged config. 
       let _defaultConfig = defaultConfig;
-      resetConfig();
+      resetConfig();  
       config = _merge(_defaultConfig, userConfig);
     } else {
       log.info("Starting listener with default configs");

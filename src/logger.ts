@@ -7,11 +7,12 @@ export default class LoggerBuilder {
 
     constructor(customLogger?) {
         if (LoggerBuilder.instance) {
+            console.log("found log builder instance")
             return LoggerBuilder.instance;
         }
 
         LoggerBuilder.instance = this;
-
+    
         let validator = this.validateLogger(customLogger)
         if( !validator && !customLogger) {
             console.warn("Failed to register logger, using console for logging.");
@@ -19,6 +20,7 @@ export default class LoggerBuilder {
             const errorOutput = createWriteStream('./stderr.log');
             this.logger = new Console(output, errorOutput);
         } else {
+            customLogger.info("Logger registered successfully.")
             this.logger = customLogger;
         }
     }
@@ -29,6 +31,7 @@ export default class LoggerBuilder {
 
     private validateLogger(logger) {
         if(!logger) {
+            console.log("found log undefined")
             return false;
         }
         let functionExists = ['info', 'warn', 'log', 'error', 'debug'];

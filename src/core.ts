@@ -15,10 +15,16 @@ import LoggerBuilder from "./logger";
 const jsonParser = bodyParser.json();
 let _config: any = {};
 let _notify: any;
-
+let log;
 const debug = Debug("webhook:listener");
 
+/**
+ * 
+ * @param request request object
+ * @param response 
+ */
 const requestHandler = (request, response) => {
+  log.info(`Request recived, '${request.method}:${request.url}'`);
   try {
     //Should be a POST call.
     if (request.method && request.method !== "POST") {
@@ -176,5 +182,7 @@ export function createListener(config, notify) {
 
   _config = config;
   _notify = notify;
+  log = new LoggerBuilder().Logger
+
   return createServer(requestHandler);
 }
