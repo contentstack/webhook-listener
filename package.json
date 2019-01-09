@@ -36,7 +36,8 @@
   "dependencies": {
     "basic-auth": "^2.0.1",
     "body-parser": "^1.18.3",
-    "lodash": "^4.17.11"
+    "lodash": "^4.17.11",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "@types/basic-auth": "^1.1.2",
