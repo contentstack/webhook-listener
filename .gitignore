@@ -17,3 +17,4 @@ example/logs
 !test/**
 !__test__
 !__test__/**
+!.npmignore

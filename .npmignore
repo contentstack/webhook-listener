@@ -1,0 +1,7 @@
+/src/
+/coverage/
+/.vscode/
+/test/
+/jest.config.js
+/.gitignore
+/tslint.json
