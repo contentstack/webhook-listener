@@ -1,12 +1,13 @@
-const listener = require('../')
+const listener = require('../dist')
 const winston = require('winston')
 
 
 // NOTE: Registering method should have a 'notify' method
 let notify = function (response) {
-		//console.dir(response, {showHidden: true, colors: true, depth: null})
-	}
+    //console.dir(response, {showHidden: true, colors: true, depth: null})
+}
 
+//create instance of custom logger
 const logger = winston.createLogger({
 	level: 'info',
 	format: winston.format.json(),
@@ -21,6 +22,8 @@ const logger = winston.createLogger({
 	]
 });
 
+
+//set custom logger
 listener.setLogger(logger);
 
 // Register modules - the module's notify will be called on events

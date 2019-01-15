@@ -9,15 +9,12 @@ let notify = function(res) {
 const dummyConsumerWithoutNotify = {};
 
 describe("Test start method", () => {
-  test("start method without registering cosumers should throw error", () => {
-    let server;
-    expect(() => {
-      start().then((svr)=>{
-        server= svr;
-      });
-    }).toThrowError(
-      "Aborting start of webhook listener, since no function is provided to notify."
-    );
+  test("start method without registering cosumers should throw error", async () => {
+    try {
+      await start()
+    } catch (error) {
+      expect(error.message).toBe("Aborting start of webhook listener, since no function is provided to notify.")
+    }
   });
 });
 
