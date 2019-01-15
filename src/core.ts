@@ -29,94 +29,84 @@ const requestHandler = (request, response) => {
 
   log.info(`Request recived, '${request.method} : ${request.url}'`);
   try {
-
-    // Should be a POST call.
-    if (request.method && request.method !== 'POST') {
-      debug('Only POST call is supported.');
-      const err = JSON.stringify({
-        body: `Only POST call is supported.`,
-        statusCode: 400,
-        statusMessage: 'Not allowed',
-      });
-      throw new Error(err);
-    }
-
-    // validate endpoint
-    debug(`${request.url} invoked`);
-    if (request.url !== _config.listener.endpoint) {
-      debug('url authentication failed');
-      throw new Error(
-        JSON.stringify({
+    return Promise.resolve().then(()=>{
+      // Should be a POST call.
+      if (request.method && request.method !== 'POST') {
+        debug('Only POST call is supported.');
+        return Promise.reject({
+          body: `Only POST call is supported.`,
+          statusCode: 400,
+          statusMessage: 'Not allowed',
+        });
+      }
+    }).then(()=> {
+      // validate endpoint
+      debug(`${request.url} invoked`);
+      if (request.url !== _config.listener.endpoint) {
+        debug('url authentication failed');
+        return Promise.reject( {
           body: `${request.url} not found.`,
           statusCode: 404,
           statusMessage: 'Not Found',
-        }),
-      );
-    }
-
-    // verify authorization
-    if (_config.listener.basic_auth) {
-      debug('validating basic auth');
-      const creds = BasicAuth(request);
-      if (!creds || (creds.name !== _config.listener.basic_auth.user || creds.pass !== _config.listener.basic_auth.pass)) {
-        debug('basic auth failed');
-        debug(
-          'expected %O but received %O',
-          _config.listener.basic_auth,
-          creds,
-        );
-        throw new Error(
-          JSON.stringify({
+        });
+      }
+    }).then(()=>{
+       // verify authorization
+      if (_config.listener.basic_auth) {
+        debug('validating basic auth');
+        const creds = BasicAuth(request);
+        if (!creds || (creds.name !== _config.listener.basic_auth.user || creds.pass !== _config.listener.basic_auth.pass)) {
+          debug('basic auth failed');
+          debug(
+            'expected %O but received %O',
+            _config.listener.basic_auth,
+            creds,
+          );
+          return Promise.reject( {
             body: 'Invalid Basic auth.',
             statusCode: 401,
             statusMessage: 'Unauthorized',
-          }),
-        );
+          });
+        }
       }
-    }
-
-    // validate custom headers
-    for (const headerKey in _config.listener.headers) {
-      debug('validating headers');
-      if (request.headers[headerKey] !== _config.listener.headers[headerKey]) {
-        debug(`${headerKey} was not found in req headers`);
-        throw new Error(
-          JSON.stringify({
-            body: 'Header key mismatch.',
-            statusCode: 417,
-            statusMessage: 'Expectation failed',
-          }),
-        );
+    }).then(()=>{
+      // validate custom headers
+      for (const headerKey in _config.listener.headers) {
+        debug('validating headers');
+        if (request.headers[headerKey] !== _config.listener.headers[headerKey]) {
+          debug(`${headerKey} was not found in req headers`);
+          return Promise.reject({
+              body: 'Header key mismatch.',
+              statusCode: 417,
+              statusMessage: 'Expectation failed',
+            });
+        }
       }
-    }
-
-    const promise = new Promise((resolve, reject) => {
-
-      // use body-parser here..
-      jsonParser(request, response, (error) => {
+    }).then(() => {
+      return jsonParser(request, response).then(() => {
         try {
           const body = request.body;
           const type = body.module;
           const event = body.event;
           let locale;
-
+  
           if (type !== 'content_type') {
             locale = body.data.locale;
           }
-
+  
           // validate event:type
           if (
             !_config.listener.actions[type] ||
             _config.listener.actions[type].indexOf(event) === -1
           ) {
             debug(`${event}:${type} not defined for processing`);
-            reject({
+            return Promise.reject({
               body: `${event}:${type} not defined for processing`,
               statusCode: 403,
               statusMessage: 'Forbidden',
             });
           }
-
+  
           const data: any = {};
           switch (type) {
             case 'asset':
@@ -137,32 +127,28 @@ const requestHandler = (request, response) => {
           }
           data.event = event;
           _notify(data);
-          resolve({ statusCode: 200, statusMessage: 'OK', body: data });
+          return Promise.resolve({ statusCode: 200, statusMessage: 'OK', body: data });
         } catch (err) {
-          reject({
+          return Promise.reject({
             body: err,
             statusCode: 500,
             statusMessage: 'Internal Error',
           });
         }
-      });
-    });
-
-    promise
-      .then((value: any) => {
-        response.setHeader('Content-Type', 'application/json');
-        response.statusCode = value.statusCode;
-        response.statusMessage = value.statusMessage;
-        response.end(JSON.stringify(value.body));
-        return;
       })
-      .catch((err: any) => {
-        response.setHeader('Content-Type', 'application/json');
-        response.statusCode = err.statusCode;
-        response.statusMessage = err.statusMessage;
-        response.end(JSON.stringify({ error: { message: err.body } }));
-        return;
-      });
+    }).then((value) => {
+      response.setHeader('Content-Type', 'application/json');
+      response.statusCode = value.statusCode;
+      response.statusMessage = value.statusMessage;
+      response.end(JSON.stringify(value.body));
+      return;
+    }).catch(error => {
+      response.setHeader('Content-Type', 'application/json');
+      response.statusCode = error.statusCode;
+      response.statusMessage = error.statusMessage;
+      response.end(JSON.stringify({ error: { message: error.body } }));
+      return;
+    })
   } catch (err) {
     debug('something went wrong... ', typeof err);
     err = JSON.parse(err.message);
