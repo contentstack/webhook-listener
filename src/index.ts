@@ -2,82 +2,111 @@
 * contentstack-webhook-listener
 * copyright (c) Contentstack LLC
 * MIT Licensed
-*/ 
+*/
 
 'use strict';
 
-import { debug as Debug } from "debug";
-import { createListener } from "./core";
-import { defaultConfig } from "./defaults";
-import { merge as _merge} from "lodash";
-import LoggerBuilder from "./logger";
+import { debug as Debug } from 'debug';
+import { merge as _merge } from 'lodash';
+import { createListener } from './core';
+import { defaultConfig } from './defaults';
+import { logger as log, setLogger } from './logger';
 
-const debug = Debug("webhook:liloggerstener");
+const debug = Debug('webhook:listener');
 let notify;
 let config: any = {};
-let log;
 
+/**
+ * Register a function that will get called when webhook is triggered.
+ * @public
+ * @param {function} consumer Function that will get called when webhook is triggered.
+ */
 export function register(consumer: any) {
-  if(typeof consumer !== "function") {
-    throw new Error('Provide function to notify consumer.')
+  if (typeof consumer !== 'function') {
+    throw new Error('Provide function to notify consumer.');
   }
-  debug("register called with %O", notify);
+  debug('register called with %O', notify);
   notify = consumer;
   return true;
 }
 
-// export function registerLogger(customLogger?: any) {
-//   log = new LoggerBuilder(customLogger).Logger
-// }
-
+/**
+ * Start webhook listener.
+ * @public
+ * @param {Object} userConfig JSON object that will override default config.
+ * @param {Logger} customLogger Instance of a logger that should have info, debug, error, warn method.
+ * @returns {Promise} Promise object represents http.Server
+ */
 export function start(userConfig: any, customLogger?: any) {
-  log = new LoggerBuilder(customLogger).Logger
-  
-  return new Promise((resolve, reject)=> {
-    debug("start called with %O", userConfig);
-    //validateConfig(userConfig);
-    // override default with user config
-    if(userConfig) {
-      //reassiging to different variable as import caches config while running test cases
-      //and provides old merged config. 
-      let _defaultConfig = defaultConfig;
-      resetConfig();  
+  if (customLogger) {
+    setLogger(customLogger);
+  }
+  return new Promise((resolve, reject) => {
+    debug('start called with %O', userConfig);
+    validateConfig(userConfig);
+    // Override default with user config
+    if (userConfig) {
+      // Reassiging to different variable as import caches config while running test cases
+      // and provides old merged config.
+      const _defaultConfig = defaultConfig;
+      resetConfig();
       config = _merge(_defaultConfig, userConfig);
     } else {
-      log.info("Starting listener with default configs");
+      log.info('Starting listener with default configs');
       config = defaultConfig;
     }
     if (!notify) {
-      log.error('Aborting start of webhook listener, since no function is provided to notify.')
-      reject(`Aborting start of webhook listener, since no function is provided to notify.`)
+      log.error('Aborting start of webhook listener, since no function is provided to notify.');
+      reject(new Error(`Aborting start of webhook listener, since no function is provided to notify.`));
     } else {
-      debug('starting with config: '+ JSON.stringify(config));
-      let port = process.env.PORT || config.listener.port
-      let server =  createListener(config, notify).listen(
+      debug('starting with config: ' + JSON.stringify(config));
+      const port = process.env.PORT || config.listener.port;
+      const server =  createListener(config, notify).listen(
         port, () => {
           log.info(`Server running at port ${port}`);
-        }
-      );  
+        },
+      );
       return resolve(server);
     }
-  })
+  });
 }
 
+/**
+ * Get configuration.
+ */
 export function getConfig() {
   return config;
 }
 
+/**
+ * Reset configuration to blank object.
+ */
 function resetConfig() {
   return config = {};
 }
 
-function validateConfig(config) {
-  if (config.listener && typeof config.listener.endpoint === "string") {
-    const reg = /^\//;
-    if (!reg.test(config.listener.endpoint)) {
-      config.listener.endpoint = "/" + config.listener.endpoint;
+/**
+ * Validates configuration.
+ * @param {object} customConfig JSON object that needs to validate.
+ */
+function validateConfig(customConfig) {
+  if (customConfig && customConfig.listener) {
+    if (customConfig.listener.endpoint) {
+      if (typeof customConfig.listener.endpoint === 'string') {
+        const reg = /^\//;
+        if (!reg.test(customConfig.listener.endpoint)) {
+          customConfig.listener.endpoint = '/' + customConfig.listener.endpoint;
+        }
+      } else {
+        throw new TypeError('Please provide valide listener.endpoint');
+      }
     }
-  } else {
-    throw new Error(`Kindly provide an endpoint for listening events`);
+    if (customConfig.listener.port && typeof customConfig.listener.port !== 'number') {
+      throw new TypeError('Please provide valide listener.port');
+    }
   }
 }
+
+export {
+  setLogger,
+};

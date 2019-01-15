@@ -1,48 +1,39 @@
-import {createWriteStream} from 'fs';
-import { Console } from 'console'
+import { Console } from 'console';
+import { createWriteStream } from 'fs';
 
-export default class LoggerBuilder {
-    private static instance: LoggerBuilder;
-    private logger;
+let logger;
+logger = new Console(process.stdout, process.stderr);
 
-    constructor(customLogger?) {
-        if (LoggerBuilder.instance) {
-            console.log("found log builder instance")
-            return LoggerBuilder.instance;
-        }
-
-        LoggerBuilder.instance = this;
-    
-        let validator = this.validateLogger(customLogger)
-        if( !validator && !customLogger) {
-            console.warn("Failed to register logger, using console for logging.");
-            const output = createWriteStream('./stdout.log');
-            const errorOutput = createWriteStream('./stderr.log');
-            this.logger = new Console(output, errorOutput);
-        } else {
-            customLogger.info("Logger registered successfully.")
-            this.logger = customLogger;
-        }
-    }
-
-    public get Logger() {
-        return this.logger
-    }
-
-    private validateLogger(logger) {
-        if(!logger) {
-            console.log("found log undefined")
-            return false;
-        }
-        let functionExists = ['info', 'warn', 'log', 'error', 'debug'];
-        functionExists.forEach(functionName => {
-            if( typeof logger[functionName] !== "function" ) {
-                console.warn("Failed to initialize custom logger due to missing function '" + functionName + "'.")
-                return false;
-            }
-        });
-        return true;
+/**
+ * It will register a logger this it to be used accross the module other wise
+ * console log will be used.
+ * @param {object} customLogger instance of a logger to be register
+ */
+function setLogger(customLogger) {
+    const validator = validateLogger(customLogger);
+    if (!validator) {
+        console.warn('Failed to register logger, using console for logging.');
+    } else {
+        logger = customLogger;
+        logger.info('Logger registered successfully.');
     }
 }
 
 
+const validateLogger = (instance) => {
+    let flag = false
+    if (!instance) {
+      return flag
+    }
+    const requiredFn = ['info', 'warn', 'log', 'error', 'debug']
+    requiredFn.forEach((name) => {
+      if (typeof instance[name] !== 'function') {
+        console.warn(`Unable to register custom logger since '${name}()' does not exist on ${instance}!`)
+        flag = true
+      }
+    })
+  
+    return !flag
+  }
+
+export {logger, setLogger};
