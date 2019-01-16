@@ -118,6 +118,41 @@ describe("Test start method without user config.", () => {
   });
 });
 
+describe("Test start method with invalid user config", async () => {
+
+  test("It should throw error when endpoint in config set to number", () => {
+    let config;
+    register(notify);
+    config = {
+      listener: {
+        port: 'trigger',
+        endpoint: 1232
+      }
+    };
+    start(config).then((svr)=>{
+      
+    }).catch((error) => {
+      expect(error.message).toBe('Please provide valide listener.endpoint');
+    });
+  })
+
+  test("It should throw error when port in config set to string", () => {
+    let config;
+    register(notify);
+    config = {
+      listener: {
+        port: 'trigger',
+        endpoint: 'trigger'
+      }
+    };
+    start(config).then((svr)=>{
+      
+    }).catch((error) => {
+      expect(error.message).toBe('Please provide valide listener.port');
+    });
+  })
+})
+
 describe("Test start method with user config", () => {
   let server;
   let config;
@@ -126,7 +161,7 @@ describe("Test start method with user config", () => {
     config = {
       listener: {
         port: 4000,
-        endpoint: "/trigger"
+        endpoint: "trigger"
       }
     };
     server = start(config).then((svr)=>{
