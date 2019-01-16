@@ -43,7 +43,11 @@ export function start(userConfig: any, customLogger?: any) {
   }
   return new Promise((resolve, reject) => {
     debug('start called with %O', userConfig);
-    validateConfig(userConfig);
+    try {
+      validateConfig(userConfig);
+    } catch (err){
+      return reject(err)
+    }
     // Override default with user config
     if (userConfig) {
       // Reassiging to different variable as import caches config while running test cases
