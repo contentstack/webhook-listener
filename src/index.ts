@@ -4,15 +4,15 @@
  * MIT Licensed
  */
 
-"use strict";
+'use strict';
 
-import { debug as Debug } from "debug";
-import { merge as _merge } from "lodash";
-import { createListener } from "./core";
-import { defaultConfig } from "./defaults";
-import { logger as log, setLogger } from "./logger";
+import { debug as Debug } from 'debug';
+import { merge as _merge } from 'lodash';
+import { createListener } from './core';
+import { defaultConfig } from './defaults';
+import { logger as log, setLogger } from './logger';
 
-const debug = Debug("webhook:listener");
+const debug = Debug('webhook:listener');
 let notify;
 let config: any = {};
 
@@ -22,10 +22,10 @@ let config: any = {};
  * @param {function} consumer Function that will get called when webhook is triggered.
  */
 export function register(consumer: any) {
-  if (typeof consumer !== "function") {
-    throw new Error("Provide function to notify consumer.");
+  if (typeof consumer !== 'function') {
+    throw new Error('Provide function to notify consumer.');
   }
-  debug("register called with %O", notify);
+  debug('register called with %O', notify);
   notify = consumer;
   return true;
 }
@@ -42,28 +42,28 @@ export function start(userConfig: any, customLogger?: any) {
     setLogger(customLogger);
   }
   return new Promise((resolve, reject) => {
-    debug("start called with %O", userConfig);
+    debug('start called with %O', userConfig);
     validateConfig(userConfig);
     // Override default with user config
     if (userConfig) {
       config = _merge({}, defaultConfig, userConfig);
     } else {
-      log.info("Starting listener with default configs");
+      log.info('Starting listener with default configs');
       config = defaultConfig;
     }
 
     if (!notify) {
       log.error(
-        "Aborting start of webhook listener, since no function is provided to notify."
+        'Aborting start of webhook listener, since no function is provided to notify.',
       );
       return reject(
         new Error(
-          `Aborting start of webhook listener, since no function is provided to notify.`
-        )
+          `Aborting start of webhook listener, since no function is provided to notify.`,
+        ),
       );
     }
 
-    debug("starting with config: " + JSON.stringify(config));
+    debug('starting with config: ' + JSON.stringify(config));
     const port = process.env.PORT || config.listener.port;
     const server = createListener(config, notify).listen(port, () => {
       log.info(`Server running at port ${port}`);
@@ -80,33 +80,26 @@ export function getConfig() {
 }
 
 /**
- * Reset configuration to blank object.
- */
-function resetConfig() {
-  return (config = {});
-}
-
-/**
  * Validates configuration.
  * @param {object} customConfig JSON object that needs to validate.
  */
 function validateConfig(customConfig) {
   if (customConfig && customConfig.listener) {
     if (customConfig.listener.endpoint) {
-      if (typeof customConfig.listener.endpoint === "string") {
+      if (typeof customConfig.listener.endpoint === 'string') {
         const reg = /^\//;
         if (!reg.test(customConfig.listener.endpoint)) {
-          customConfig.listener.endpoint = "/" + customConfig.listener.endpoint;
+          customConfig.listener.endpoint = '/' + customConfig.listener.endpoint;
         }
       } else {
-        throw new TypeError("Please provide valide listener.endpoint");
+        throw new TypeError('Please provide valide listener.endpoint');
       }
     }
     if (
       customConfig.listener.port &&
-      typeof customConfig.listener.port !== "number"
+      typeof customConfig.listener.port !== 'number'
     ) {
-      throw new TypeError("Please provide valide listener.port");
+      throw new TypeError('Please provide valide listener.port');
     }
   }
 }
