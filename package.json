@@ -38,13 +38,12 @@
     "basic-auth": "^2.0.1",
     "body-parser": "^1.18.3",
     "lodash": "^4.17.11",
-    "winston": "^3.1.0",
     "debug": "^4.1.0"
   },
   "devDependencies": {
     "@types/basic-auth": "^1.1.2",
     "@types/node": "^10.12.2",
-    
+    "winston": "^3.1.0",
     "jest": "^23.6.0",
     "rimraf": "^2.6.2",
     "supertest": "^3.3.0",

@@ -4,8 +4,7 @@ const http = require("http");
 
 const  notify = function(res) {
     //console.dir(response, { showHidden: true, colors: true, depth: null });
-  }
-
+  };
 
 describe("Test createListener method", () => {
   test("It should throw error as without config and consumers", () => {
@@ -18,7 +17,7 @@ describe("Test createListener method", () => {
   });
   test("It should return instance of http.server", () => {
     expect(createListener(defaultConfig, notify)).toBeInstanceOf(
-      http.Server
+      http.Server,
     );
   });
 });

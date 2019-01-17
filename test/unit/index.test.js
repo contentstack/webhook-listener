@@ -1,19 +1,23 @@
 const request = require("supertest");
 const http = require("http");
-const {register, start} = require("../../dist")
+const winston = require("winston");
+const { register, start, getConfig } = require("../../dist");
+const logs = require("../../dist/logger");
 
 let notify = function(res) {
-    //console.dir(response, { showHidden: true, colors: true, depth: null });
-}
+  //console.dir(response, { showHidden: true, colors: true, depth: null });
+};
 
 const dummyConsumerWithoutNotify = {};
 
 describe("Test start method", () => {
   test("start method without registering cosumers should throw error", async () => {
     try {
-      await start()
+      await start();
     } catch (error) {
-      expect(error.message).toBe("Aborting start of webhook listener, since no function is provided to notify.")
+      expect(error.message).toBe(
+        "Aborting start of webhook listener, since no function is provided to notify.",
+      );
     }
   });
 });
@@ -25,9 +29,7 @@ describe("Test register method", () => {
   test("It should throw error as consumer not contain notify method", () => {
     expect(() => {
       register(dummyConsumerWithoutNotify);
-    }).toThrowError(
-      "Provide function to notify consumer."
-    );
+    }).toThrowError("Provide function to notify consumer.");
   });
 });
 
@@ -36,20 +38,19 @@ describe("Test start method without user config.", () => {
 
   beforeAll(() => {
     register(notify);
-     start().then((svr)=>{
-      server= svr;
+    start().then(svr => {
+      server = svr;
     });
   });
   afterAll(function() {
     server.close();
   });
-  test("start method should return instance of http.server", () => {
+  test("Start method should return instance of http.server", () => {
     expect(server).toBeInstanceOf(http.Server);
   });
-  test("default port should be 5000", () => {
+  test("Default port should be 5000", () => {
     expect(server.address().port).toBe(5000);
   });
-
   test("POST /notify publish entry", () => {
     let dummyPayload = require("./dummy/entry_publish.json");
     return request(server)
@@ -100,7 +101,7 @@ describe("Test start method without user config.", () => {
       .then(response => {
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Only POST call is supported."
+          "Only POST call is supported.",
         );
       });
   });
@@ -118,6 +119,68 @@ describe("Test start method without user config.", () => {
   });
 });
 
+describe("Test getConfig method", () => {
+  test("It should return config.", () => {
+    let config = getConfig();
+    expect(config.listener.port).toBe(5000);
+    expect(config.listener.endpoint).toBe("/notify");
+  });
+});
+
+describe("Test start method with custom logger", () => {
+  let customLogger;
+  beforeAll(() => {
+    register(notify);
+    customLogger = winston.createLogger({
+      transports: [
+        new winston.transports.Console(),
+      ],
+    });
+  });
+  afterAll(function() {
+    server.close();
+  });
+  test("It should set custom logger using start method.", async () => {
+    await start({}, customLogger);
+    expect(typeof logs.logger).toBe("object");
+    expect(logs.logger.transports[0].name).toBe("console");
+  });
+});
+
+describe("Test start method with invalid user config", async () => {
+  test("It should throw error when endpoint in config set to number", () => {
+    let config;
+    register(notify);
+    config = {
+      listener: {
+        port: "trigger",
+        endpoint: 1232,
+      },
+    };
+    start(config)
+      .then(svr => {})
+      .catch(error => {
+        expect(error.message).toBe("Please provide valide listener.endpoint");
+      });
+  });
+
+  test("It should throw error when port in config set to string", () => {
+    let config;
+    register(notify);
+    config = {
+      listener: {
+        port: "trigger",
+        endpoint: "trigger",
+      },
+    };
+    start(config)
+      .then(svr => {})
+      .catch(error => {
+        expect(error.message).toBe("Please provide valide listener.port");
+      });
+  });
+});
+
 describe("Test start method with user config", () => {
   let server;
   let config;
@@ -126,11 +189,11 @@ describe("Test start method with user config", () => {
     config = {
       listener: {
         port: 4000,
-        endpoint: "/trigger"
-      }
+        endpoint: "trigger",
+      },
     };
-    server = start(config).then((svr)=>{
-      server= svr;
+    server = start(config).then(svr => {
+      server = svr;
     });
   });
   afterAll(function() {
@@ -160,7 +223,7 @@ describe("Test start method with user config", () => {
       .then(response => {
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Only POST call is supported."
+          "Only POST call is supported.",
         );
       });
   });
@@ -176,11 +239,10 @@ describe("Test start method with user config", () => {
         done();
       });
   });
-  
 });
 
 describe("Test start method with custom header.", () => {
-  const { register, start, getConfig} = require("../../dist");
+  const { register, start, getConfig } = require("../../dist");
   let server;
   let config;
   beforeAll(() => {
@@ -189,14 +251,14 @@ describe("Test start method with custom header.", () => {
       listener: {
         port: 4000,
         endpoint: "/trigger",
-        headers:{
-          "x-secure-header": "randomnumbers"
-        }
-      }
+        headers: {
+          "x-secure-header": "randomnumbers",
+        },
+      },
     };
-    server = start(config).then((svr)=>{
-      server= svr;
-    });;
+    server = start(config).then(svr => {
+      server = svr;
+    });
   });
   afterAll(function() {
     server.close();
@@ -207,7 +269,7 @@ describe("Test start method with custom header.", () => {
       .post("/trigger")
       .send(dummyPayload)
       .set("Accept", "application/json")
-      .set("x-secure-header","randomnumbers")
+      .set("x-secure-header", "randomnumbers")
       .then(response => {
         expect(response.statusCode).toBe(200);
       });
@@ -218,7 +280,7 @@ describe("Test start method with custom header.", () => {
       .post("/trigger")
       .send(dummyPayload)
       .set("Accept", "application/json")
-      .set("x-secure-header","adsf")
+      .set("x-secure-header", "adsf")
       .then(response => {
         expect(response.statusCode).toBe(417);
       });
@@ -239,20 +301,20 @@ describe("Test start method with basic auth ", () => {
   let server;
   let config;
   beforeAll(() => {
-      register(notify);
-      config = {
-        listener: {
-          port: 4000,
-          endpoint: "/trigger",
-          basic_auth:{
-            user: "admin",
-            pass: "admin"
-          }
-        }
-      };
-      server = start(config).then((svr)=>{
-        server= svr;
-      });;
+    register(notify);
+    config = {
+      listener: {
+        port: 4000,
+        endpoint: "/trigger",
+        basic_auth: {
+          user: "admin",
+          pass: "admin",
+        },
+      },
+    };
+    server = start(config).then(svr => {
+      server = svr;
+    });
   });
   afterAll(function() {
     server.close();
@@ -261,7 +323,7 @@ describe("Test start method with basic auth ", () => {
     let dummyPayload = require("./dummy/entry_publish.json");
     return request(server)
       .post("/trigger")
-      .auth('admin', 'admin')
+      .auth("admin", "admin")
       .send(dummyPayload)
       .set("x-secure-header", "randomnumbers")
       .set("Accept", "application/json")
@@ -274,7 +336,7 @@ describe("Test start method with basic auth ", () => {
     let dummyPayload = require("./dummy/entry_publish.json");
     return request(server)
       .post("/trigger")
-      .auth('owner', 'admin')
+      .auth("owner", "admin")
       .send(dummyPayload)
       .set("Accept", "application/json")
       .then(response => {
@@ -286,7 +348,7 @@ describe("Test start method with basic auth ", () => {
     let dummyPayload = require("./dummy/entry_publish.json");
     return request(server)
       .post("/trigger")
-      .auth('admin', 'password')
+      .auth("admin", "password")
       .send(dummyPayload)
       .set("Accept", "application/json")
       .then(response => {
@@ -298,7 +360,7 @@ describe("Test start method with basic auth ", () => {
     let dummyPayload = require("./dummy/entry_publish.json");
     return request(server)
       .post("/trigger")
-      .auth('owner', 'password')
+      .auth("owner", "password")
       .send(dummyPayload)
       .set("Accept", "application/json")
       .then(response => {
