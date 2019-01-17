@@ -10,9 +10,8 @@ import BasicAuth from 'basic-auth';
 import * as bodyParser from 'body-parser';
 import { debug as Debug } from 'debug';
 import { createServer } from 'http';
+import { promisify } from 'util';
 import { logger as log } from './logger';
-import { promisify } from "util";
-
 
 const jsonParser = promisify(bodyParser.json());
 
@@ -38,18 +37,18 @@ const requestHandler = (request, response) => {
         statusMessage: 'Not allowed',
       });
     }
-  }).then(()=> {
+  }).then(() => {
     // validate endpoint
     debug(`${request.url} invoked`);
     if (request.url !== _config.listener.endpoint) {
       debug('url authentication failed');
-      return Promise.reject( {
+      return Promise.reject({
         body: `${request.url} not found.`,
         statusCode: 404,
         statusMessage: 'Not Found',
       });
     }
-  }).then(()=>{
+  }).then(() => {
       // verify authorization
     if (_config.listener.basic_auth) {
       debug('validating basic auth');
@@ -61,14 +60,14 @@ const requestHandler = (request, response) => {
           _config.listener.basic_auth,
           creds,
         );
-        return Promise.reject( {
+        return Promise.reject({
           body: 'Invalid Basic auth.',
           statusCode: 401,
           statusMessage: 'Unauthorized',
         });
       }
     }
-  }).then(()=>{
+  }).then(() => {
     // validate custom headers
     for (const headerKey in _config.listener.headers) {
       debug('validating headers');
@@ -134,20 +133,20 @@ const requestHandler = (request, response) => {
           statusMessage: 'Internal Error',
         });
       }
-    })
+    });
   }).then((value) => {
     response.setHeader('Content-Type', 'application/json');
     response.statusCode = value.statusCode;
     response.statusMessage = value.statusMessage;
     response.end(JSON.stringify(value.body));
     return;
-  }).catch(error => {
+  }).catch((error) => {
     response.setHeader('Content-Type', 'application/json');
     response.statusCode = error.statusCode;
     response.statusMessage = error.statusMessage;
     response.end(JSON.stringify({ error: { message: error.body } }));
     return;
-  })
+  });
 };
 
 /**
