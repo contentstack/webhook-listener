@@ -28,6 +28,5 @@ export const defaultConfig = {
         'delete',
       ],
     },
-    locales: ['*'],
   },
 };

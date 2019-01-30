@@ -1,8 +1,8 @@
 /*!
-* contentstack-webhook-listener
-* copyright (c) Contentstack LLC
-* MIT Licensed
-*/
+ * contentstack-webhook-listener
+ * copyright (c) Contentstack LLC
+ * MIT Licensed
+ */
 
 'use strict';
 
@@ -46,28 +46,29 @@ export function start(userConfig: any, customLogger?: any) {
     validateConfig(userConfig);
     // Override default with user config
     if (userConfig) {
-      // Reassiging to different variable as import caches config while running test cases
-      // and provides old merged config.
-      const _defaultConfig = defaultConfig;
-      resetConfig();
-      config = _merge(_defaultConfig, userConfig);
+      config = _merge({}, defaultConfig, userConfig);
     } else {
       log.info('Starting listener with default configs');
       config = defaultConfig;
     }
+
     if (!notify) {
-      log.error('Aborting start of webhook listener, since no function is provided to notify.');
-      reject(new Error(`Aborting start of webhook listener, since no function is provided to notify.`));
-    } else {
-      debug('starting with config: ' + JSON.stringify(config));
-      const port = process.env.PORT || config.listener.port;
-      const server =  createListener(config, notify).listen(
-        port, () => {
-          log.info(`Server running at port ${port}`);
-        },
+      log.error(
+        'Aborting start of webhook listener, since no function is provided to notify.',
       );
-      return resolve(server);
+      return reject(
+        new Error(
+          `Aborting start of webhook listener, since no function is provided to notify.`,
+        ),
+      );
     }
+
+    debug('starting with config: ' + JSON.stringify(config));
+    const port = process.env.PORT || config.listener.port;
+    const server = createListener(config, notify).listen(port, () => {
+      log.info(`Server running at port ${port}`);
+    });
+    return resolve(server);
   });
 }
 
@@ -76,13 +77,6 @@ export function start(userConfig: any, customLogger?: any) {
  */
 export function getConfig() {
   return config;
-}
-
-/**
- * Reset configuration to blank object.
- */
-function resetConfig() {
-  return config = {};
 }
 
 /**
@@ -101,12 +95,13 @@ function validateConfig(customConfig) {
         throw new TypeError('Please provide valide listener.endpoint');
       }
     }
-    if (customConfig.listener.port && typeof customConfig.listener.port !== 'number') {
+    if (
+      customConfig.listener.port &&
+      typeof customConfig.listener.port !== 'number'
+    ) {
       throw new TypeError('Please provide valide listener.port');
     }
   }
 }
 
-export {
-  setLogger,
-};
+export { setLogger };
