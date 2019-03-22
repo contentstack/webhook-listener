@@ -39,12 +39,12 @@ start({
 ```
 ## Configuration
 
-| Property       | DataType     | Description | Default |
+| Property       | DataType     | Default |Description |
 | :------------- | :---------- | :---------- | :---------- |
-|  listener.port | number      |  **optional** A port for starting the webhook listener |5000|
-|  listener.endpoint | string      |  **optional** The URL where the webhook should be triggered |/notify|
-|  listener.basic_auth.user | string      |  **optional** Basic auth username |-|
-|  listener.basic_auth.pass | string      |  **optional** Basic auth password |-|
+|  listener.port | number      | 5000| **Optional.** A port for starting the webhook listener. |
+|  listener.endpoint | string      |  /notify| **Optional.** The URL where the webhook should be triggered. |
+|  listener.basic_auth.user | string      | -| **Optional.** Basic auth username. |
+|  listener.basic_auth.pass | string      |  -| **Optional.** Basic auth password. |
 
 
 ## Support and Feature requests
