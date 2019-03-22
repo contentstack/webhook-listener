@@ -3,11 +3,11 @@
 
 Contentstack is a headless CMS with an API-first approach. It is a CMS that developers can use to build powerful cross-platform applications in their favorite languages. Build your application frontend, and Contentstack will take care of the rest. [Read More](https://www.contentstack.com/). 
 
-Contentstack provides Webhook listener to get notified when webhook gets triggered. It is build to use along with Contentstack Sync Manager and Contentstack Asset stores and Content stores.
+Contentstack webhook listener is HTTP webserver to get notified when Contentstacak webhook gets triggered. It is used as trigger in Contentstack DataSync to start synchronizing data.
 
 ### Prerequisite
 
-You need Node.js version 4.4.7 or later installed to use the Contentstack wehbook listener and register a method which gets called on webhook triggered.
+Node.js 8+
 
 ### Config
 
@@ -37,3 +37,20 @@ start({
 })
 
 ```
+#Configuration
+
+| Property       | DataType     | Description | Default |
+| :------------- | :---------- | :---------- | :---------- |
+|  listener.port | number      |  **optional** A port for starting the webhook listener |5000|
+|  listener.endpoint | string      |  **optional** The URL where the webhook should be triggered |/notify|
+|  listener.basic_auth.user | string      |  **optional** Basic auth username |-|
+|  listener.basic_auth.pass | string      |  **optional** Basic auth password |-|
+
+
+## Support and Feature requests
+If you have any issues working with the library, please file an issue here at Github.
+
+You can send us an e-mail if you have any support or feature requests. Our support team is available 24/7 on the intercom. You can always get in touch and give us an opportunity to serve you better!
+
+## License
+This repository is published under the MIT license.
