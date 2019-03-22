@@ -53,4 +53,4 @@ If you have any issues working with the library, please file an issue here at Gi
 You can send us an e-mail if you have any support or feature requests. Our support team is available 24/7 on the intercom. You can always get in touch and give us an opportunity to serve you better!
 
 ## License
-This repository is published under the MIT license.
+This repository is published under the [MIT license](LICENSE).
