@@ -9,10 +9,6 @@ Contentstack webhook listener is HTTP webserver to get notified when Contentstac
 
 Node.js 8+
 
-### Config
-
-listener.port
-
 ### Usage
 
 ```js
