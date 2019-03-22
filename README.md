@@ -37,7 +37,7 @@ start({
 })
 
 ```
-#Configuration
+## Configuration
 
 | Property       | DataType     | Description | Default |
 | :------------- | :---------- | :---------- | :---------- |
