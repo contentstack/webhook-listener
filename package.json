@@ -1,10 +1,10 @@
 {
-  "name": "contentstack-webhook-listener",
-  "version": "1.0.0",
+  "name": "@contentstack/webhook-listener",
+  "version": "0.0.1-rc.1",
   "description": "Listen to contentstack webhook and triggers sync manager.",
   "main": "./dist",
   "types": "./typings",
-  "homepage": "https://github.com/contentstack/contentstack-webhook-listener#readme",
+  "homepage": "https://github.com/contentstack/webhook-listener#readme",
   "directories": {
     "lib": "lib"
   },
@@ -20,16 +20,15 @@
     "watch-ts": "npm run clean && tsc -w",
     "test": "jest --coverage",
     "compile": "tsc",
-    "prepare": "npm run compile",
     "pretest": "npm run compile",
     "start": "node example/"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/contentstack/contentstack-webhook-listener"
+    "url": "https://github.com/contentstack/webhook-listener"
   },
   "bugs": {
-    "url": "https://github.com/contentstack/contentstack-webhook-listener/issues",
+    "url": "https://github.com/contentstack/webhook-listener/issues",
     "email": "support@contentstack.com"
   },
   "author": "Contentstack LLC <support@contentstack.com>",
