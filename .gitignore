@@ -18,4 +18,4 @@ example/logs
 !__test__
 !__test__/**
 !.npmignore
-!dist
+!dist/**
