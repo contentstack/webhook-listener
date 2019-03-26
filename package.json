@@ -1,10 +1,10 @@
 {
   "name": "@contentstack/webhook-listener",
-  "version": "0.0.1-rc.1",
+  "version": "0.0.1",
   "description": "Listen to contentstack webhook and triggers sync manager.",
   "main": "./dist",
   "types": "./typings",
-  "homepage": "https://github.com/contentstack/webhook-listener#readme",
+  "homepage": "HTTP web server that listens to Contentstack webhooks. This is part of Contentstack DataSync.",
   "directories": {
     "lib": "lib"
   },
