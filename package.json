@@ -9,10 +9,11 @@
     "lib": "lib"
   },
   "keywords": [
-    "Contentstack",
+    "contentstack",
     "webhook",
     "listener",
-    "utility"
+    "utility",
+    "datasync"
   ],
   "scripts": {
     "clean": "rimraf dist",
