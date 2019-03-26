@@ -51,6 +51,12 @@ Read more about Contentstack webhooks [here](https://www.contentstack.com/docs/g
 |  listener.basic_auth.pass | string      |  -| **Optional.** Basic auth password. |
 
 
+### Further Reading
+
+- [Getting started with Contentstack DataSync](https://www.contentstack.com/docs/guide/synchronization/contentstack-datasync)
+- [Contentstack DataSync](https://www.contentstack.com/docs/guide/synchronization/contentstack-datasync/configuration-files-for-contentstack-datasync) doc lists the configuration for different modules
+
+
 ### Support and Feature requests
 If you have any issues working with the library, please file an issue here at Github.
 
