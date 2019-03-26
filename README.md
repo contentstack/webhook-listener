@@ -5,7 +5,9 @@ Contentstack is a headless CMS with an API-first approach. It is a CMS that deve
 
 ## Contentstack Webhook Listener
 
-The Contentstack Webhook Listener is an HTTP web server used to notify the module when a webhook is triggered. As soon as the webhook is triggered, the data synchronization process begins by notifying the specific module, that is, DataSync Manager
+Contentstack DataSync lets you sync your Contentstack data with your database, enabling you to save data locally and serve content directly from your database. It is a combination of four powerful modules that is [DataSync Webhook Listener](https://github.com/contentstack/webhook-listener), [DataSync Manager](https://github.com/contentstack/datasync-manager), [DataSync Asset Store Filesystem](https://github.com/contentstack/datasync-asset-store-filesystem), DataSync Content Store — [Filesystem](https://github.com/contentstack/datasync-content-store-filesystem) and [MongoDB](https://github.com/contentstack/datasync-content-store-mongodb).
+
+The Contentstack Webhook Listener is an HTTP web server used to notify the module when a webhook is triggered. As soon as the webhook is triggered, the data synchronization process begins by notifying the specific module, that is, DataSync Manager.
 
 ## Prerequisite
 
