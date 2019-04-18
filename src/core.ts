@@ -26,7 +26,7 @@ let jsonParser: any = {};
 const requestHandler = (request, response) => {
 
   jsonParser = promisify(bodyParser.json(_config.listener.bodyParser));
-  console.log('%%%%%%')
+
   log.info(`Request recived, '${request.method} : ${request.url}'`);
   return Promise.resolve().then(() => {
     // Should be a POST call.
@@ -88,7 +88,7 @@ const requestHandler = (request, response) => {
         const type = body.module;
         const event = body.event;
         let locale;
-        console.log('@@@', body)
+
         if (type !== 'content_type') {
           locale = body.data.locale;
         }
@@ -163,6 +163,6 @@ export function createListener(config, notify) {
 
   _config = config;
   _notify = notify;
-  console.log('aasds', config)
+
   return createServer(requestHandler);
 }
