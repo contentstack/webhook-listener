@@ -10,6 +10,9 @@ export const defaultConfig = {
   listener: {
     port: 5000,
     endpoint: '/notify',
+    bodyParser: {
+      limit:'500kb',
+    },
     actions: {
       entry: [
         'delete',

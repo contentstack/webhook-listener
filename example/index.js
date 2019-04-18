@@ -29,10 +29,14 @@ listener.register(notify)
 // Start listener
 listener.start({
 	listener:{
-		endpoint: '/register',
+		// endpoint: '/register',
 		basic_auth:{
 			user:"admin",
 			pass: "admin"
+		},
+		bodyParser:{
+			limit: '700kb',
+			strict: true
 		}
 	}	
 })

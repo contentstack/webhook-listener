@@ -73,6 +73,17 @@ describe("Test start method without user config.", () => {
       });
   });
 
+  test("POST request entity too large", () => {
+    let dummyPayload = require("./dummy/demo.json");
+    return request(server)
+      .post("/notify")
+      .send(dummyPayload)
+      .set("Accept", "application/json")
+      .then(response => {
+        expect(response.statusCode).toBe(413);
+      });
+  });
+
   test("POST /notify with action delete cotenttype.", () => {
     let dummyPayload = require("./dummy/cotenttype_deleted.json");
     return request(server)
@@ -190,6 +201,7 @@ describe("Test start method with user config", () => {
       listener: {
         port: 4000,
         endpoint: "trigger",
+        bodyParser: {limit: '5kb'}
       },
     };
     server = start(config).then(svr => {
@@ -214,6 +226,17 @@ describe("Test start method with user config", () => {
       .set("Accept", "application/json")
       .then(response => {
         expect(response.statusCode).toBe(200);
+      });
+  });
+
+  test("POST overrides the config for bodyParser", () => {
+    let dummyPayload = require("./dummy/entry_publish.json");
+    return request(server)
+      .post("/trigger")
+      .send(dummyPayload)
+      .set("Accept", "application/json")
+      .then(response => {
+        expect(config.listener.bodyParser.limit).toBe('5kb');
       });
   });
 
@@ -254,6 +277,7 @@ describe("Test start method with custom header.", () => {
         headers: {
           "x-secure-header": "randomnumbers",
         },
+        bodyParser: {limit: '5kb'}
       },
     };
     server = start(config).then(svr => {
@@ -310,6 +334,7 @@ describe("Test start method with basic auth ", () => {
           user: "admin",
           pass: "admin",
         },
+        bodyParser: {limit: '5kb'}
       },
     };
     server = start(config).then(svr => {

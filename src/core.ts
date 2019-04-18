@@ -13,11 +13,10 @@ import { createServer } from 'http';
 import { promisify } from 'util';
 import { logger as log } from './logger';
 
-const jsonParser = promisify(bodyParser.json());
-
 let _config: any = {};
 let _notify: any;
 const debug = Debug('webhook:listener');
+let jsonParser: any = {};
 
 /**
  * Handle requests
@@ -26,6 +25,8 @@ const debug = Debug('webhook:listener');
  */
 const requestHandler = (request, response) => {
 
+  jsonParser = promisify(bodyParser.json(_config.listener.bodyParser));
+  console.log('%%%%%%')
   log.info(`Request recived, '${request.method} : ${request.url}'`);
   return Promise.resolve().then(() => {
     // Should be a POST call.
@@ -87,7 +88,7 @@ const requestHandler = (request, response) => {
         const type = body.module;
         const event = body.event;
         let locale;
-
+        console.log('@@@', body)
         if (type !== 'content_type') {
           locale = body.data.locale;
         }
@@ -141,6 +142,7 @@ const requestHandler = (request, response) => {
     response.end(JSON.stringify(value.body));
     return;
   }).catch((error) => {
+    console.log(error.message)
     response.setHeader('Content-Type', 'application/json');
     response.statusCode = error.statusCode;
     response.statusMessage = error.statusMessage;
@@ -161,6 +163,6 @@ export function createListener(config, notify) {
 
   _config = config;
   _notify = notify;
-
+  console.log('aasds', config)
   return createServer(requestHandler);
 }
