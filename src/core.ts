@@ -17,6 +17,7 @@ let _config: any = {};
 let _notify: any;
 const debug = Debug('webhook:listener');
 let jsonParser: any = {};
+let server: any = {};
 
 /**
  * Handle requests
@@ -125,6 +126,11 @@ const requestHandler = (request, response) => {
             break;
         }
         data.event = event;
+
+        if(_config.listener.emitEvent === true){
+         server.emit(event, data);
+        }
+
         _notify(data);
         return Promise.resolve({ statusCode: 200, statusMessage: 'OK', body: data });
       } catch (err) {
@@ -163,6 +169,6 @@ export function createListener(config, notify) {
 
   _config = config;
   _notify = notify;
-
-  return createServer(requestHandler);
+  server = createServer(requestHandler);
+  return server;
 }

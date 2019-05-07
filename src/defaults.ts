@@ -31,5 +31,7 @@ export const defaultConfig = {
         'delete',
       ],
     },
+    emitEvent: false,
+    ngrokConnect: false
   },
 };

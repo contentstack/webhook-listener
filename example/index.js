@@ -29,7 +29,7 @@ listener.register(notify)
 // Start listener
 listener.start({
 	listener:{
-		endpoint: '/register',
+		// endpoint: '/register',
 		basic_auth:{
 			user:"admin",
 			pass: "admin"
@@ -37,6 +37,17 @@ listener.start({
 		bodyParser:{
 			limit: '700kb',
 			strict: true
-		}
+		},
+		emitEvent: true,
+		ngrokConnect: true
 	}	
+})
+// if emitEvent is set to true
+.then(server => {
+	server.on("publish", (payload) => {
+		console.log('publish payload', payload)
+	})
+	server.on("unpublish", (payload) => {
+		console.log('unpublish', payload)
+	})
 })

@@ -11,6 +11,7 @@ import { merge as _merge } from 'lodash';
 import { createListener } from './core';
 import { defaultConfig } from './defaults';
 import { logger as log, setLogger } from './logger';
+import { connect } from 'ngrok'
 
 const debug = Debug('webhook:listener');
 let notify;
@@ -67,6 +68,12 @@ export function start(userConfig: any, customLogger?: any) {
     const port = process.env.PORT || config.listener.port;
     const server = createListener(config, notify).listen(port, () => {
       log.info(`Server running at port ${port}`);
+
+      if(config.listener.ngrokConnect === true) {
+        connect(port, (err, url) => {
+          console.log(`ngrok url: ${url}`);
+        });
+      }
     });
     return resolve(server);
   });
@@ -100,6 +107,12 @@ function validateConfig(customConfig) {
       typeof customConfig.listener.port !== 'number'
     ) {
       throw new TypeError('Please provide valide listener.port');
+    }
+    if (customConfig.listener.emitEvent && typeof customConfig.listener.emitEvent !== 'boolean') {
+      throw new TypeError('Please provide valid listener.emitEvent')
+    }
+    if (customConfig.listener.ngrokConnect && typeof customConfig.listener.ngrokConnect !== 'boolean') {
+      throw new TypeError('Please provide valid listener.ngrokConnect')
     }
   }
 }

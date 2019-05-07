@@ -190,6 +190,41 @@ describe("Test start method with invalid user config", async () => {
         expect(error.message).toBe("Please provide valide listener.port");
       });
   });
+
+  test("It should throw error when emitEvent in config set to string", () => {
+    let config;
+    register(notify);
+    config = {
+      listener: {
+        port: 1234,
+        endpoint: "/register",
+        emitEvent: "true"
+      },
+    };
+    start(config)
+      .then(svr => {})
+      .catch(error => {
+        expect(error.message).toBe("Please provide valid listener.emitEvent");
+      });
+  });
+  
+  test("It should throw error when ngrokConnect in config set to string", () => {
+    let config;
+    register(notify);
+    config = {
+      listener: {
+        port: 1234,
+        endpoint: "/register",
+        emitEvent: true,
+        ngrokConnect: "true"
+      },
+    };
+    start(config)
+      .then(svr => {})
+      .catch(error => {
+        expect(error.message).toBe("Please provide valid listener.ngrokConnect");
+      });
+  });
 });
 
 describe("Test start method with user config", () => {
