@@ -1,7 +1,7 @@
 {
   "name": "@contentstack/webhook-listener",
-  "version": "0.0.1",
-  "description": "HTTP web server that listens to Contentstack webhooks. This is part of Contentstack DataSync.",
+  "version": "1.0.0",
+  "description": "HTTP web server that listens to Contentstack webhooks. This is part of Contentstack DataSync",
   "main": "./dist",
   "types": "./typings",
   "homepage": "https://www.contentstack.com/docs/guide/synchronization/contentstack-datasync",
@@ -43,10 +43,10 @@
   "devDependencies": {
     "@types/basic-auth": "^1.1.2",
     "@types/node": "^10.12.2",
-    "winston": "^3.1.0",
-    "jest": "^23.6.0",
+    "jest": "^24.8.0",
     "rimraf": "^2.6.2",
     "supertest": "^3.3.0",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.2",
+    "winston": "^3.1.0"
   }
 }
