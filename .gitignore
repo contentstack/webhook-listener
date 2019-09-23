@@ -19,3 +19,5 @@ example/logs
 !__test__/**
 !.npmignore
 !dist/**
+!type
+!type/**
