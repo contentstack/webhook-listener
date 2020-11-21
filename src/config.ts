@@ -6,7 +6,21 @@
 
 'use strict';
 
-export const defaultConfig = {
+export interface Config {
+  listener?: {
+    port?: number,
+    endpoint?: string,
+    actions?: {
+      entry?: string[],
+      asset?: string[],
+      asset_folder?: string[],
+      content_type?: string[],
+    },
+  }
+  [propName: string]: any
+}
+
+export const defaultConfig : Config = {
   listener: {
     port: 5000,
     endpoint: '/notify',

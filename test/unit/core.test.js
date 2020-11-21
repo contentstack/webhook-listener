@@ -1,5 +1,5 @@
 const { createListener } = require("../../dist/core");
-const { defaultConfig } = require("../../dist/defaults");
+const { defaultConfig } = require("../../dist/config");
 const http = require("http");
 
 const  notify = function(res) {
