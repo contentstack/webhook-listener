@@ -13,7 +13,7 @@ import { Config, defaultConfig } from './config';
 import { logger as log, setLogger } from './logger';
 
 const debug = Debug('webhook:listener');
-let notify;
+let notify: any;
 let config: Config = defaultConfig;
 
 /**
@@ -21,7 +21,7 @@ let config: Config = defaultConfig;
  * @public
  * @param {function} consumer Function that will get called when webhook is triggered.
  */
-export const register = (consumer: any) => {
+export function register(consumer: any) {
   if (typeof consumer !== 'function') {
     throw new Error('Provide function to notify consumer.');
   }
@@ -37,7 +37,7 @@ export const register = (consumer: any) => {
  * @param {Logger} customLogger Instance of a logger that should have info, debug, error, warn method.
  * @returns {Promise} Promise object represents http.Server
  */
-export const start = (userConfig: any, customLogger?: any): Promise<any> => {
+export function start(userConfig: any, customLogger?: any): Promise<any> {
   return new Promise((resolve, reject) => {
     try {
       if (customLogger) {
@@ -77,29 +77,29 @@ export const start = (userConfig: any, customLogger?: any): Promise<any> => {
  * Sets listener library's configuration
  * @param {Config} config Listener lib config
  */
-export const setConfig = (newConfig) => {
+export function setConfig(newConfig) {
   config = merge(config, newConfig);
 }
 
 /**
  * Get configuration.
  */
-export const getConfig = () => {
+export function getConfig() {
   return config;
 }
 
 /**
  * Initialize / reset configuration to defaults.
  */
-export const initConfig = () => {
+export function initConfig() {
   config = defaultConfig;
 }
 
 /**
  * Validates configuration.
- * @param {object} customConfig JSON object that needs to validate.
+ * @param {Config} customConfig JSON object that needs to validate.
  */
-export const validateConfig = (customConfig: Config) => {
+function validateConfig(customConfig: Config) {
   if (customConfig && customConfig.listener) {
     if (customConfig.listener.endpoint) {
       if (typeof customConfig.listener.endpoint === 'string') {
