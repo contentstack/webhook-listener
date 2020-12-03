@@ -1,29 +1,31 @@
 const request = require("supertest");
 const http = require("http");
 const winston = require("winston");
-const { register, start, getConfig } = require("../../dist");
+const { register, start, getConfig, setConfig, initConfig } = require("../../dist");
 const logs = require("../../dist/logger");
+const { defaultConfig } = require("../../dist/config");
 
-let notify = function(res) {
+let notify = function (res) {
   //console.dir(response, { showHidden: true, colors: true, depth: null });
 };
 
 const dummyConsumerWithoutNotify = {};
 
 describe("Test start method", () => {
-  test("start method without registering cosumers should throw error", async () => {
-    try {
-      await start();
-    } catch (error) {
-      expect(error.message).toBe(
-        "Aborting start of webhook listener, since no function is provided to notify.",
-      );
-    }
+  test("start method without registering consumers should throw error", () => {
+    start()
+      .then()
+      .catch(error => {
+        expect(error.message).toBe("Aborting start of webhook listener, since no function is provided to notify.");
+      })
+      .finally(srv => {
+        initConfig();
+      })
   });
 });
 
 describe("Test register method", () => {
-  test("It should retrun true as consumer contians notify method", () => {
+  test("It should return true as consumer contains notify method", () => {
     expect(register(notify)).toBe(true);
   });
   test("It should throw error as consumer not contain notify method", () => {
@@ -42,15 +44,20 @@ describe("Test start method without user config.", () => {
       server = svr;
     });
   });
-  afterAll(function() {
+
+  afterAll(function () {
     server.close();
+    initConfig();
   });
+
   test("Start method should return instance of http.server", () => {
     expect(server).toBeInstanceOf(http.Server);
   });
+
   test("Default port should be 5000", () => {
     expect(server.address().port).toBe(5000);
   });
+
   test("POST /notify publish entry", () => {
     let dummyPayload = require("./dummy/entry_publish.json");
     return request(server)
@@ -120,35 +127,52 @@ describe("Test start method without user config.", () => {
 });
 
 describe("Test getConfig method", () => {
-  test("It should return config.", () => {
+  test("It should return default config.", () => {
+    initConfig();
     let config = getConfig();
+    console.log('config', config)
+
     expect(config.listener.port).toBe(5000);
     expect(config.listener.endpoint).toBe("/notify");
   });
 });
 
+describe("Test setConfig method", () => {
+  test("It should return modified config.", () => {
+    initConfig();
+    let userConfig = {
+      userKey: "userValue"
+    };
+    setConfig(userConfig);
+    let config = getConfig();
+    console.log('config', config)
+
+    expect(config.listener.port).toBe(5000);
+    expect(config.listener.endpoint).toBe("/notify");
+    expect(config.userKey).toBe("userValue");
+  });
+});
+
 describe("Test start method with custom logger", () => {
-  let customLogger;
-  beforeAll(() => {
+  test("It should set custom logger using start method.", () => {
     register(notify);
-    customLogger = winston.createLogger({
+    let customLogger = winston.createLogger({
       transports: [
         new winston.transports.Console(),
       ],
     });
-  });
-  afterAll(function() {
-    server.close();
-  });
-  test("It should set custom logger using start method.", async () => {
-    await start({}, customLogger);
-    expect(typeof logs.logger).toBe("object");
-    expect(logs.logger.transports[0].name).toBe("console");
+
+    start({}, customLogger).then(srv => {
+      server = srv;
+      expect(typeof logs.logger).toBe("object");
+      expect(logs.logger.transports[0].name).toBe("console");
+      server.close();
+    });
   });
 });
 
-describe("Test start method with invalid user config", async () => {
-  test("It should throw error when endpoint in config set to number", () => {
+describe("Test start method with invalid user config", () => {
+  test("It should throw error when endpoint in config set to number", done => {
     let config;
     register(notify);
     config = {
@@ -158,13 +182,14 @@ describe("Test start method with invalid user config", async () => {
       },
     };
     start(config)
-      .then(svr => {})
+      .then(svr => { })
       .catch(error => {
-        expect(error.message).toBe("Please provide valide listener.endpoint");
-      });
+        expect(error.message).toBe("Please provide valid listener.endpoint");
+      })
+      .finally(done);
   });
 
-  test("It should throw error when port in config set to string", () => {
+  test("It should throw error when port in config set to string", done => {
     let config;
     register(notify);
     config = {
@@ -174,10 +199,13 @@ describe("Test start method with invalid user config", async () => {
       },
     };
     start(config)
-      .then(svr => {})
+      .then(svr => {
+        svr.close()
+      })
       .catch(error => {
-        expect(error.message).toBe("Please provide valide listener.port");
-      });
+        expect(error.message).toBe("Please provide valid listener.port");
+      })
+      .finally(done);
   });
 });
 
@@ -196,12 +224,15 @@ describe("Test start method with user config", () => {
       server = svr;
     });
   });
-  afterAll(function() {
+  afterAll(function () {
     server.close();
+    initConfig();
   });
+
   test("start method should return instance of http.server", () => {
     expect(server).toBeInstanceOf(http.Server);
   });
+
   test("default port should be 4000", () => {
     expect(server.address().port).toBe(4000);
   });
@@ -242,7 +273,6 @@ describe("Test start method with user config", () => {
 });
 
 describe("Test start method with custom header.", () => {
-  const { register, start, getConfig } = require("../../dist");
   let server;
   let config;
   beforeAll(() => {
@@ -260,9 +290,12 @@ describe("Test start method with custom header.", () => {
       server = svr;
     });
   });
-  afterAll(function() {
+
+  afterAll(function () {
     server.close();
+    initConfig();
   });
+
   test("POST with custom header", () => {
     let dummyPayload = require("./dummy/entry_publish.json");
     return request(server)
@@ -316,9 +349,12 @@ describe("Test start method with basic auth ", () => {
       server = svr;
     });
   });
-  afterAll(function() {
+
+  afterAll(function () {
     server.close();
+    initConfig();
   });
+
   test("POST /trigger with basic auth", () => {
     let dummyPayload = require("./dummy/entry_publish.json");
     return request(server)

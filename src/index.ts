@@ -9,13 +9,12 @@
 import { debug as Debug } from 'debug';
 import { merge } from 'lodash';
 import { createListener } from './core';
-import { defaultConfig } from './defaults';
+import { Config, defaultConfig } from './config';
 import { logger as log, setLogger } from './logger';
 
 const debug = Debug('webhook:listener');
-let notify;
-let config: any = {};
-let appConfig: any = defaultConfig
+let notify: any;
+let config: Config = defaultConfig;
 
 /**
  * Register a function that will get called when webhook is triggered.
@@ -38,15 +37,15 @@ export function register(consumer: any) {
  * @param {Logger} customLogger Instance of a logger that should have info, debug, error, warn method.
  * @returns {Promise} Promise object represents http.Server
  */
-export function start(userConfig: any, customLogger?: any) {
+export function start(userConfig: any, customLogger?: any): Promise<any> {
   return new Promise((resolve, reject) => {
     try {
       if (customLogger) {
         setLogger(customLogger);
       }
       debug('start called with %O', userConfig);
-      appConfig = merge(appConfig, userConfig)
-      validateConfig(appConfig);
+      setConfig(userConfig);
+      validateConfig(config);
 
       if (!notify) {
         log.error(
@@ -59,9 +58,9 @@ export function start(userConfig: any, customLogger?: any) {
         );
       }
 
-      debug('starting with config: ' + JSON.stringify(appConfig));
-      const port = process.env.PORT || appConfig.listener.port;
-      const server = createListener(appConfig, notify).listen(port, () => {
+      debug('starting with config: ' + JSON.stringify(config));
+      const port = process.env.PORT || config.listener.port;
+      const server = createListener(config, notify).listen(port, () => {
         log.info(`Server running at port ${port}`);
       });
       return resolve(server);
@@ -76,10 +75,10 @@ export function start(userConfig: any, customLogger?: any) {
  * @method setConfig
  * @description
  * Sets listener library's configuration
- * @param config Listener lib config
+ * @param {Config} config Listener lib config
  */
-export const setConfig = (config) => {
-  appConfig = merge(appConfig, config)
+export function setConfig(newConfig) {
+  config = merge(config, newConfig);
 }
 
 /**
@@ -90,10 +89,17 @@ export function getConfig() {
 }
 
 /**
- * Validates configuration.
- * @param {object} customConfig JSON object that needs to validate.
+ * Initialize / reset configuration to defaults.
  */
-function validateConfig(customConfig) {
+export function initConfig() {
+  config = defaultConfig;
+}
+
+/**
+ * Validates configuration.
+ * @param {Config} customConfig JSON object that needs to validate.
+ */
+function validateConfig(customConfig: Config) {
   if (customConfig && customConfig.listener) {
     if (customConfig.listener.endpoint) {
       if (typeof customConfig.listener.endpoint === 'string') {
@@ -102,14 +108,14 @@ function validateConfig(customConfig) {
           customConfig.listener.endpoint = '/' + customConfig.listener.endpoint;
         }
       } else {
-        throw new TypeError('Please provide valide listener.endpoint');
+        throw new TypeError('Please provide valid listener.endpoint');
       }
     }
     if (
       customConfig.listener.port &&
       typeof customConfig.listener.port !== 'number'
     ) {
-      throw new TypeError('Please provide valide listener.port');
+      throw new TypeError('Please provide valid listener.port');
     }
   }
 }
