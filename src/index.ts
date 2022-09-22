@@ -76,10 +76,10 @@ export function start(userConfig: any, customLogger?: any) {
  * @method setConfig
  * @description
  * Sets listener library's configuration
- * @param config Listener lib config
+ * @param _config Listener lib config
  */
-export const setConfig = (config) => {
-  appConfig = merge(appConfig, config)
+export const setConfig = (_config) => {
+  appConfig = merge(appConfig, _config)
 }
 
 /**
