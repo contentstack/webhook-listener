@@ -8,6 +8,7 @@ example/logs
 !src/**
 !.gitignore
 !package.json
+!package-lock.json
 !README.md
 !tsconfig.json
 !README.md
@@ -19,3 +20,4 @@ example/logs
 !__test__/**
 !.npmignore
 !dist/**
+!.talismanrc

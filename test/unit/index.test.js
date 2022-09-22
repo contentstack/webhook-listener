@@ -242,7 +242,6 @@ describe("Test start method with user config", () => {
 });
 
 describe("Test start method with custom header.", () => {
-  const { register, start, getConfig } = require("../../dist");
   let server;
   let config;
   beforeAll(() => {
