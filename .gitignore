@@ -21,3 +21,4 @@ example/logs
 !.npmignore
 !dist/**
 !.talismanrc
+!SECURITY.md
