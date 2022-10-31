@@ -1,5 +1,4 @@
 import { Console } from 'console';
-import { createWriteStream } from 'fs';
 
 let logger;
 logger = new Console(process.stdout, process.stderr);
