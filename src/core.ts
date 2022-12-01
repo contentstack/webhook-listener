@@ -27,6 +27,7 @@ const debug = Debug('webhook:listener');
 const requestHandler = (request, response) => {
 
   log.info(`Request recived, '${request.method} : ${request.url}'`);
+  debug('_config', _config);
   return Promise.resolve().then(() => {
     // Should be a POST call.
     if (request.method && request.method !== 'POST') {
@@ -40,7 +41,7 @@ const requestHandler = (request, response) => {
   }).then(() => {
     // validate endpoint
     debug(`${request.url} invoked`);
-    if (request.url !== _config.listener.endpoint) {
+    if (_config && _config.listener && request.url !== _config.listener.endpoint) {
       debug('url authentication failed');
       return Promise.reject({
         body: `${request.url} not found.`,
@@ -49,11 +50,12 @@ const requestHandler = (request, response) => {
       });
     }
   }).then(() => {
-      // verify authorization
-    if (_config.listener.basic_auth) {
-      debug('validating basic auth');
-      const creds = BasicAuth(request);
-      if (!creds || (creds.name !== _config.listener.basic_auth.user || creds.pass !== _config.listener.basic_auth.pass)) {
+    // verify authorization
+      debug('validating basic auth', _config.listener);
+      if (_config && _config.listener && _config.listener.basic_auth) {
+        debug('validating basic auth');
+        const creds = BasicAuth(request);
+        if (!creds || (creds.name !== _config.listener.basic_auth.user || creds.pass !== _config.listener.basic_auth.pass)) {
         debug('basic auth failed');
         debug(
           'expected %O but received %O',
@@ -69,78 +71,88 @@ const requestHandler = (request, response) => {
     }
   }).then(() => {
     // validate custom headers
-    for (const headerKey in _config.listener.headers) {
-      debug('validating headers');
-      if (request.headers[headerKey] !== _config.listener.headers[headerKey]) {
-        debug(`${headerKey} was not found in req headers`);
-        return Promise.reject({
-            body: 'Header key mismatch.',
-            statusCode: 417,
-            statusMessage: 'Expectation failed',
-          });
-      }
-    }
-  }).then(() => {
-    return jsonParser(request, response).then(() => {
-      try {
-        const body = request.body;
-        const type = body.module;
-        const event = body.event;
-        let locale;
-
-        if (type !== 'content_type') {
-          locale = body.data.locale;
-        }
-
-        // validate event:type
-        if (
-          !_config.listener.actions[type] ||
-          _config.listener.actions[type].indexOf(event) === -1
-        ) {
-          debug(`${event}:${type} not defined for processing`);
+    debug('validate custom headers');
+    if (_config && _config.listener) {
+      for (const headerKey in _config.listener.headers) {
+        debug('validating headers');
+        if (request.headers[headerKey] !== _config.listener.headers[headerKey]) {
+          debug(`${headerKey} was not found in req headers`);
           return Promise.reject({
-            body: `${event}:${type} not defined for processing`,
-            statusCode: 403,
-            statusMessage: 'Forbidden',
-          });
+              body: 'Header key mismatch.',
+              statusCode: 417,
+              statusMessage: 'Expectation failed',
+            });
         }
+      } 
+    }
+  }).then(async () => {
+    debug('parsing json');
+    try {
+      await jsonParser(request, response);
+      const body = request.body;
+      const type = body.module;
+      const event = body.event;
+      let locale;
 
-        const data: any = {};
-        switch (type) {
-          case 'asset':
-            data.data = body.data.asset;
-            data.locale = locale;
-            data.content_type_uid = '_assets';
-            break;
-          case 'entry':
-            data.locale = locale;
-            data.data = body.data.entry;
-            data.content_type = body.data.content_type;
-            data.content_type_uid = body.data.content_type.uid;
-            break;
-          default:
-            data.content_type = body.data;
-            data.content_type_uid = '_content_types';
-            break;
-        }
-        data.event = event;
-        _notify(data);
-        return Promise.resolve({ statusCode: 200, statusMessage: 'OK', body: data });
-      } catch (err) {
+      if (type !== 'content_type') {
+        locale = body.data.locale;
+      }
+      debug('_config.listener.actions[type]', _config.listener.actions[type]);
+      debug('event', event);
+      // validate event:type
+      if (
+        !_config.listener.actions[type] ||
+        _config.listener.actions[type].indexOf(event) === -1
+      ) {
+        debug(`${event}:${type} not defined for processing`);
         return Promise.reject({
-          body: err,
-          statusCode: 500,
-          statusMessage: 'Internal Error',
+          body: `${event}:${type} not defined for processing`,
+          statusCode: 403,
+          statusMessage: 'Forbidden',
         });
       }
-    });
+
+      const data: any = {};
+      switch (type) {
+        case 'asset':
+          data.data = body.data.asset;
+          data.locale = locale;
+          data.content_type_uid = '_assets';
+          break;
+        case 'entry':
+          data.locale = locale;
+          data.data = body.data.entry;
+          data.content_type = body.data.content_type;
+          data.content_type_uid = body.data.content_type.uid;
+          break;
+        default:
+          data.content_type = body.data;
+          data.content_type_uid = '_content_types';
+          break;
+      }
+      data.event = event;
+      _notify(data).then((data) => {
+        debug('Data [_notify]', data);
+      }).catch((error) => {
+        debug('Error [_notify]', error);
+      });
+      return Promise.resolve({ statusCode: 200, statusMessage: 'OK', body: data });
+    } catch (err) {
+      return Promise.reject({
+        body: err,
+        statusCode: 500,
+        statusMessage: 'Internal Error',
+      });
+    }
   }).then((value) => {
+    debug('Value', value);
     response.setHeader('Content-Type', 'application/json');
     response.statusCode = value.statusCode;
     response.statusMessage = value.statusMessage;
     response.end(JSON.stringify(value.body));
     return;
   }).catch((error) => {
+    debug('Error', error);
     response.setHeader('Content-Type', 'application/json');
     response.statusCode = error.statusCode;
     response.statusMessage = error.statusMessage;
