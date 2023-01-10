@@ -1,5 +1,5 @@
 {
-    "triggered_at": "2018-12-19T12:25:02.083Z",
+    "triggered_at": "1970-01-01T00:00:00.000Z",
     "event": "delete",
     "data": {
       "options": {
@@ -37,11 +37,11 @@
         }
       ],
       "description": "",
-      "uid": "copy_of_footer",
-      "title": "copy_of_Footer",
-      "updated_at": "2018-12-19T12:24:50.201Z",
-      "created_at": "2018-12-19T12:24:46.731Z"
+      "uid": "testuid",
+      "title": "testuid",
+      "updated_at": "1970-01-01T00:00:00.000Z",
+      "created_at": "1970-01-01T00:00:00.000Z"
     },
-    "api_key": "blte570a8fa36ad8689",
+    "api_key": "testuid",
     "module": "content_type"
   }
