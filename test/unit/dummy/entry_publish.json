@@ -1,5 +1,5 @@
 {
-    "triggered_at":"2018-11-25T21:11:09.214Z",
+    "triggered_at":"1970-01-01T00:00:00.000Z",
     "event":"publish",
     "data":{
        "content_type":{
@@ -62,29 +62,29 @@
              }
           ],
           "description":"",
-          "uid":"header",
-          "title":"Header",
-          "updated_by":"sys_blt815d4d2116f9864d",
-          "updated_at":"2018-10-18T06:54:30.848Z",
-          "created_by":"sys_blt815d4d2116f9864d",
-          "created_at":"2018-06-12T10:52:13.198Z"
+          "uid":"testuid",
+          "title":"testuid",
+          "updated_by":"testuid",
+          "updated_at":"testuid",
+          "created_by":"1970-01-01T00:00:00.000Z",
+          "created_at":"1970-01-01T00:00:00.000Z"
        },
        "entry":{
           "publish_details":{
-             "user":"sys_blt815d4d2116f9864d",
-             "time":"2018-11-25T21:11:08.964Z",
+             "user":"testuid",
+             "time":"1970-01-01T00:00:00.000Z",
              "locale":"en-us",
-             "environment":"blt95f102633167a7f3"
+             "environment":"testuid"
           },
           "_version":3,
           "ACL":{
  
           },
-          "updated_at":"2018-10-17T14:10:38.143Z",
-          "created_at":"2018-09-28T12:17:26.556Z",
-          "updated_by":"sys_blt815d4d2116f9864d",
-          "created_by":"sys_blt815d4d2116f9864d",
-          "uid":"bltec0bd5834205a0f0",
+          "updated_at":"1970-01-01T00:00:00.000Z",
+          "created_at":"1970-01-01T00:00:00.000Z",
+          "updated_by":"testuid",
+          "created_by":"testuid",
+          "uid":"testuid",
           "locale":"en-us",
           "tags":[
  
@@ -94,31 +94,31 @@
           ],
           "file":{
              "publish_details":{
-                "user":"sys_blt815d4d2116f9864d",
-                "time":"2018-10-19T14:24:41.469Z",
+                "user":"testuid",
+                "time":"1970-01-01T00:00:00.000Z",
                 "locale":"en-us",
-                "environment":"blt95f102633167a7f3"
+                "environment":"testuid"
              },
-             "title":"Dtafalonso-Android-Lollipop-Downloads.ico",
+             "title":"testfilename",
              "_version":1,
              "is_dir":false,
              "ACL":{
  
              },
-             "url":"https://images.contentstack.io/v3/assets/blte570a8fa36ad8689/blt5e05cfbe516e1cd3/5b21fee067719aa926dcce60/Dtafalonso-Android-Lollipop-Downloads.ico",
-             "filename":"Dtafalonso-Android-Lollipop-Downloads.ico",
+             "url":"testurl",
+             "filename":"testfilename",
              "tags":[
  
              ],
              "file_size":"178334",
              "content_type":"image/x-icon",
-             "updated_by":"sys_blt815d4d2116f9864d",
-             "created_by":"sys_blt815d4d2116f9864d",
-             "updated_at":"2018-06-14T05:36:32.750Z",
-             "created_at":"2018-06-14T05:36:32.750Z",
-             "uid":"blt5e05cfbe516e1cd3"
+             "updated_by":"testuid",
+             "created_by":"testuid",
+             "updated_at":"1970-01-01T00:00:00.000Z",
+             "created_at":"1970-01-01T00:00:00.000Z",
+             "uid":"testuid"
           },
-          "title":"header 2nd 123"
+          "title":"testtitle"
        },
        "locale":"en-us",
        "status":"success",
@@ -128,11 +128,11 @@
           "ACL":[
  
           ],
-          "updated_at":"2018-11-25T20:58:25.728Z",
-          "created_at":"2018-10-19T14:22:44.322Z",
-          "updated_by":"sys_blt815d4d2116f9864d",
-          "created_by":"sys_blt815d4d2116f9864d",
-          "uid":"blt95f102633167a7f3",
+          "updated_at":"1970-01-01T00:00:00.000Z",
+          "created_at":"1970-01-01T00:00:00.000Z",
+          "updated_by":"testuid",
+          "created_by":"testuid",
+          "uid":"testuid",
           "name":"development",
           "urls":[
              {
@@ -146,6 +146,6 @@
           "deploy_content":false
        }
     },
-    "api_key": "blte570a8fa36ad8689",
+    "api_key": "testuid",
     "module": "entry"
  }
