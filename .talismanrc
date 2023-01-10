@@ -1,4 +1,14 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: 0acae64f37b95af983862fd0bf531278b9d84d58e1e20b8511597790a6dc6b7d
+  checksum: e5b668dd0b4887db6df4c7115d6adf1b0f086581b33c0b47898ceea0f7733d6f
+- filename: test/unit/dummy/asset_publish.json
+  checksum: 49a2e9dce1e55f8a0ec986b28fd407810817135d92b56124869f0692a0bc36da
+- filename: test/unit/dummy/cotenttype_deleted.json
+  checksum: c4545ba86c7755dd9ae907f07bfc33619b9bdefb621bbe7ca4eb1bc49a45ad18
+- filename: test/unit/dummy/entry_publish.json
+  checksum: b28675f73e88a668e045ba69cade91b8ebc9a0c43afe4bd7b8f8005a26ce7037
+- filename: test/unit/dummy/incorrectpayload.json
+  checksum: e8adbcb2a2a65c2fcf26cd687440441936c555c869ae58e6cf1a27a60fa1a929
+- filename: test/unit/dummy/entry_created.json
+  checksum: 7e74037e487002ac69d7713bb3406a07de47ce4405df70e4a8185f601d536d97
 version: ""
