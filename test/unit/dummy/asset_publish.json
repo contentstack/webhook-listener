@@ -1,29 +1,29 @@
 {
-    "triggered_at": "2018-12-13T09:07:33.085Z",
+    "triggered_at": "1970-01-01T00:00:00.000Z",
     "event": "publish",
     "data": {
       "asset": {
         "publish_details": {
-          "user": "sys_blt815d4d2116f9864d",
-          "time": "2018-12-13T09:07:32.443Z",
+          "user": "testuid",
+          "time": "1970-01-01T00:00:00.000Z",
           "locale": "en-us",
-          "environment": "blt95f102633167a7f3"
+          "environment": "testuid"
         },
-        "title": "Above-White-Clouds-Wallpaper-1920x1200.jpg",
+        "title": "testfilename",
         "_version": 1,
         "parent_uid": null,
         "is_dir": false,
         "ACL": {},
-        "url": "https://images.contentstack.io/v3/assets/blte570a8fa36ad8689/blt581cf54091017f1f/5bb1f11c0ea0b7fa24000502/Above-White-Clouds-Wallpaper-1920x1200.jpg",
-        "filename": "Above-White-Clouds-Wallpaper-1920x1200.jpg",
+        "url": "testurl",
+        "filename": "testfilename",
         "tags": [],
         "file_size": "351829",
         "content_type": "image/jpeg",
-        "updated_by": "sys_blt815d4d2116f9864d",
-        "created_by": "sys_blt815d4d2116f9864d",
-        "updated_at": "2018-10-01T10:04:12.701Z",
-        "created_at": "2018-10-01T10:04:12.701Z",
-        "uid": "blt581cf54091017f1f"
+        "updated_by": "testuid",
+        "created_by": "testuid",
+        "updated_at": "1970-01-01T00:00:00.000Z",
+        "created_at": "1970-01-01T00:00:00.000Z",
+        "uid": "testuid"
       },
       "locale": "en-us",
       "status": "success",
@@ -31,11 +31,11 @@
       "environment": {
         "_version": 3,
         "ACL": [],
-        "updated_at": "2018-11-25T20:58:25.728Z",
-        "created_at": "2018-10-19T14:22:44.322Z",
-        "updated_by": "sys_blt815d4d2116f9864d",
-        "created_by": "sys_blt815d4d2116f9864d",
-        "uid": "blt95f102633167a7f3",
+        "updated_at": "1970-01-01T00:00:00.000Z",
+        "created_at": "1970-01-01T00:00:00.000Z",
+        "updated_by": "testuid",
+        "created_by": "testuid",
+        "uid": "testuid",
         "name": "development",
         "urls": [
           {
@@ -47,6 +47,6 @@
         "deploy_content": false
       }
     },
-    "api_key": "blte570a8fa36ad8689",
+    "api_key": "testuid",
     "module": "asset"
   }
