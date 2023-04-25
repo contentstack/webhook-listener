@@ -1,6 +1,6 @@
 fileignoreconfig:
 - filename: package-lock.json
-  checksum: e5b668dd0b4887db6df4c7115d6adf1b0f086581b33c0b47898ceea0f7733d6f
+  checksum: 8662ef51f09893ea01f9d191eec48984fd6ad71f0f1a34b37e604b7195991ebc
 - filename: test/unit/dummy/asset_publish.json
   checksum: 49a2e9dce1e55f8a0ec986b28fd407810817135d92b56124869f0692a0bc36da
 - filename: test/unit/dummy/cotenttype_deleted.json
