@@ -13,6 +13,14 @@ import { defaultConfig } from './defaults';
 import { logger as log, setLogger } from './logger';
 
 const debug = Debug('webhook:listener');
+
+if (
+  process.env.DEBUG === "*" ||
+  (process.env.DEBUG || "").includes("webhook:listener")
+) {
+  debug.enabled = true;
+}
+
 let notify;
 let config: any = {};
 let appConfig: any = defaultConfig

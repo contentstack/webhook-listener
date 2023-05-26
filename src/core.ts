@@ -19,6 +19,13 @@ let _config: any = {};
 let _notify: any;
 const debug = Debug('webhook:listener');
 
+if (
+  process.env.DEBUG === "*" ||
+  (process.env.DEBUG || "").includes("webhook:listener")
+) {
+  debug.enabled = true;
+}
+
 /**
  * Handle requests
  * @param {Object} request request object
