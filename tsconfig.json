@@ -6,7 +6,7 @@
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist",
+    "outDir": "./dist",
     "baseUrl": "./src",
     "lib": ["es6"],
     "paths": {
