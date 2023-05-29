@@ -5,11 +5,10 @@
   "main": "./dist",
   "types": "./typings",
   "homepage": "https://www.contentstack.com/docs/guide/synchronization/contentstack-datasync",
-  "directories": {
-    "lib": "lib"
-  },
   "files": [
-    "/dist"
+    "/dist",
+    "/typings",
+    "/npm-shrinkwrap.json"
   ],
   "keywords": [
     "contentstack",
@@ -29,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/contentstack/webhook-listener"
+    "url": "git+https://github.com/contentstack/webhook-listener"
   },
   "bugs": {
     "url": "https://github.com/contentstack/webhook-listener/issues",
