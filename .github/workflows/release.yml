@@ -9,13 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.5.3
         with:
           fetch-depth: 0
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3.7.0
         with:
-          node-version: 16
+          node-version: 18
       - name: Install dependencies
         run: npm install
       - name: Build
@@ -32,13 +32,13 @@ jobs:
     needs: build
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.5.3
         with:
           fetch-depth: 0
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3.7.0
         with:
-          node-version: 16
+          node-version: 18
       - name: Install dependencies
         run: npm install
       - name: Download dist
@@ -49,6 +49,6 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
       - name: Release
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v2.2.1
         with:
           token: ${{ secrets.NPM_TOKEN }}
