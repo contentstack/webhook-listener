@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/webhook-listener",
-  "version": "1.0.4",
+  "version": "1.0.3",
   "description": "HTTP web server that listens to Contentstack webhooks. This is part of Contentstack DataSync",
   "main": "./dist",
   "types": "./typings",
