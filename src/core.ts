@@ -13,12 +13,12 @@ import { createServer } from 'http';
 import { promisify } from 'util';
 import { logger as log } from './logger';
 
-const jsonParser = promisify(bodyParser.json());
 
 let _config: any = {};
 let _notify: any;
 const debug = Debug('webhook:listener');
 
+let jsonParser = promisify(bodyParser.json({ limit: '1mb' }));
 /**
  * Handle requests
  * @param {Object} request request object
@@ -88,6 +88,9 @@ const requestHandler = (request, response) => {
   }).then(async () => {
     debug('parsing json');
     try {
+      if (_config.reqBodyLimit) {
+        jsonParser = promisify(bodyParser.json({ limit: _config.reqBodyLimit }));
+      }
       await jsonParser(request, response);
       const body = request.body;
       const type = body.module;
