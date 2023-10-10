@@ -49,6 +49,6 @@ jobs:
       - name: Display structure of downloaded files
         run: ls -R
       - name: Release
-        uses: JS-DevTools/npm-publish@v2.2.1
+        uses: JS-DevTools/npm-publish@7f426c9ea8cd6f53975623a350c34e3a3707739c # version 2.2.2
         with:
           token: ${{ secrets.NPM_TOKEN }}
