@@ -16,12 +16,12 @@ jobs:
 
       - name: get-package-details
         id: package
-        uses: codex-team/action-nodejs-package-info@v1.1
+        uses: codex-team/action-nodejs-package-info@91c20c2872fd5d1a6fe97d606d9dcb6553696185 # version 1.1
       - name: install npm packall
         run: npm install npm-pack-all
 
       - run: node node_modules/.bin/npm-pack-all
-      - uses: Klemensas/action-autotag@stable
+      - uses: Klemensas/action-autotag@380682c329fccb8b270e70e59d40d0e918dc5a0f # version 1.2.3
         id: update_tag
         with:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"

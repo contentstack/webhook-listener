@@ -9,14 +9,14 @@ jobs:
     steps:
       - uses: actions/checkout@v3.5.3
       - name: Login into JIRA
-        uses: atlassian/gajira-login@master
+        uses: atlassian/gajira-login@77a4213dadf33ab531bf546c2e1308e0bdc15b39 # version 3.0.1
         env:
           JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
           JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
           JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
       - name: Create a JIRA Issue
         id: create
-        uses: atlassian/gajira-create@master
+        uses: atlassian/gajira-create@59e177c4f6451399df5b4911c2211104f171e669 # version 3.0.1
         with:
           project: ${{ secrets.JIRA_PROJECT }}
           issuetype: ${{ secrets.JIRA_ISSUE_TYPE }}
