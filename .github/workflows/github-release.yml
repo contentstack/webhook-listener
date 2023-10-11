@@ -2,7 +2,7 @@ name: Release Webhook Listener
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   build:
