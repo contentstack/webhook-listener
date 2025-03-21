@@ -11,7 +11,7 @@ The Contentstack Webhook Listener is an HTTP web server used to notify the modul
 
 ## Prerequisite
 
-Node.js 8+
+Node.js 20+
 
 
 ## Usage
