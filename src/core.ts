@@ -28,6 +28,8 @@ const requestHandler = (request, response) => {
 
   log.info(`Request recived, '${request.method} : ${request.url}'`);
   debug('_config', _config);
+  // Explicitly remove or override the X-Powered-By header
+  response.setHeader('X-Powered-By', ''); 
   return Promise.resolve().then(() => {
     // Should be a POST call.
     if (request.method && request.method !== 'POST') {
@@ -152,14 +154,28 @@ const requestHandler = (request, response) => {
     response.setHeader('Content-Type', 'application/json');
     response.statusCode = value.statusCode;
     response.statusMessage = value.statusMessage;
-    response.end(JSON.stringify(value.body));
+    // Example: Return only safe fields
+    const safeBody = {
+      data: value.body?.data || value?.body || null
+    };
+
+    response.end(JSON.stringify(safeBody));
     return;
   }).catch((error) => {
     debug('Error', error);
+    const safeError = {
+      statusCode: error.statusCode || 500,
+      statusMessage: error.statusMessage || 'Internal Server Error',
+      body: typeof error.body === 'string' 
+      ? error.body 
+      : (typeof error.body === 'object' && error.body !== null
+          ? JSON.stringify(error.body)
+          : 'An unexpected error occurred.'),    
+    };
     response.setHeader('Content-Type', 'application/json');
     response.statusCode = error.statusCode;
     response.statusMessage = error.statusMessage;
-    response.end(JSON.stringify({ error: { message: error.body } }));
+    response.end(JSON.stringify({ error: { message: safeError.body } }));
     return;
   });
 };
