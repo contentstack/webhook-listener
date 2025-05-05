@@ -1,4 +1,7 @@
 fileignoreconfig:
+- filename: .github/workflows/secrets-scan.yml
+  ignore_detectors:
+    - filecontent
 - filename: package-lock.json
   checksum: 8662ef51f09893ea01f9d191eec48984fd6ad71f0f1a34b37e604b7195991ebc
 - filename: test/unit/dummy/asset_publish.json
