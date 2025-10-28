@@ -11,6 +11,7 @@ import { merge } from 'lodash';
 import { createListener } from './core';
 import { defaultConfig } from './defaults';
 import { logger as log, setLogger } from './logger';
+import { MESSAGES } from './messages';
 
 const debug = Debug('webhook:listener');
 let notify;
@@ -26,7 +27,7 @@ export function register(consumer: any) {
   if (typeof consumer !== 'function') {
     throw new Error('Provide function to notify consumer.');
   }
-  debug('register called with %O', notify);
+  debug(MESSAGES.REGISTER_CALLED, notify);
   notify = consumer;
   return true;
 }
@@ -44,7 +45,7 @@ export function start(userConfig: any, customLogger?: any) {
       if (customLogger) {
         setLogger(customLogger);
       }
-      debug('start called with %O', userConfig);
+      debug(MESSAGES.START_CALLED, userConfig);
       appConfig = merge(appConfig, userConfig)
       validateConfig(appConfig);
 
@@ -59,10 +60,10 @@ export function start(userConfig: any, customLogger?: any) {
         );
       }
 
-      debug('starting with config: ' + JSON.stringify(appConfig));
+      debug(MESSAGES.STARTING_WITH_CONFIG(JSON.stringify(appConfig)));
       const port = process.env.PORT || appConfig.listener.port;
       const server = createListener(appConfig, notify).listen(port, () => {
-        log.info(`Server running at port ${port}`);
+        log.info(MESSAGES.SERVER_RUNNING(port));
       });
       return resolve(server);
     } catch (error) {
@@ -102,14 +103,14 @@ function validateConfig(customConfig) {
           customConfig.listener.endpoint = '/' + customConfig.listener.endpoint;
         }
       } else {
-        throw new TypeError('Please provide valide listener.endpoint');
+        throw new TypeError(MESSAGES.INVALID_LISTENER_ENDPOINT);
       }
     }
     if (
       customConfig.listener.port &&
       typeof customConfig.listener.port !== 'number'
     ) {
-      throw new TypeError('Please provide valide listener.port');
+      throw new TypeError(MESSAGES.INVALID_LISTENER_PORT);
     }
   }
 }

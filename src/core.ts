@@ -12,6 +12,7 @@ import { debug as Debug } from 'debug';
 import { createServer } from 'http';
 import { promisify } from 'util';
 import { logger as log } from './logger';
+import { MESSAGES } from './messages';
 
 
 let _config: any = {};
@@ -26,14 +27,14 @@ let jsonParser = promisify(bodyParser.json({ limit: '1mb' }));
  */
 const requestHandler = (request, response) => {
 
-  log.info(`Request recived, '${request.method} : ${request.url}'`);
+  log.info(MESSAGES.REQUEST_RECEIVED);
   debug('_config', _config);
   // Explicitly remove or override the X-Powered-By header
   response.setHeader('X-Powered-By', ''); 
   return Promise.resolve().then(() => {
     // Should be a POST call.
     if (request.method && request.method !== 'POST') {
-      debug('Only POST call is supported.');
+      debug(MESSAGES.ONLY_POST_SUPPORTED);
       return Promise.reject({
         body: `Only POST call is supported.`,
         statusCode: 400,
@@ -42,9 +43,9 @@ const requestHandler = (request, response) => {
     }
   }).then(() => {
     // validate endpoint
-    debug(`${request.url} invoked`);
+    debug(MESSAGES.REQUEST_INVOKED(request.url));
     if (_config && _config.listener && request.url !== _config.listener.endpoint) {
-      debug('url authentication failed');
+      debug(MESSAGES.URL_AUTH_FAILED);
       return Promise.reject({
         body: `${request.url} not found.`,
         statusCode: 404,
@@ -53,12 +54,12 @@ const requestHandler = (request, response) => {
     }
   }).then(() => {
     // verify authorization
-      debug('validating basic auth', _config.listener);
+      debug(MESSAGES.VALIDATING_BASIC_AUTH, _config.listener);
       if (_config && _config.listener && _config.listener.basic_auth) {
-        debug('validating basic auth');
+        debug(MESSAGES.VALIDATING_BASIC_AUTH);
         const creds = BasicAuth(request);
         if (!creds || (creds.name !== _config.listener.basic_auth.user || creds.pass !== _config.listener.basic_auth.pass)) {
-        debug('basic auth failed');
+        debug(MESSAGES.BASIC_AUTH_FAILED);
         debug(
           'expected %O but received %O',
           _config.listener.basic_auth,
@@ -73,12 +74,12 @@ const requestHandler = (request, response) => {
     }
   }).then(() => {
     // validate custom headers
-    debug('validate custom headers');
+    debug(MESSAGES.VALIDATING_CUSTOM_HEADERS);
     if (_config && _config.listener) {
       for (const headerKey in _config.listener.headers) {
-        debug('validating headers');
+        debug(MESSAGES.VALIDATING_HEADERS);
         if (request.headers[headerKey] !== _config.listener.headers[headerKey]) {
-          debug(`${headerKey} was not found in req headers`);
+          debug(MESSAGES.HEADER_NOT_FOUND(headerKey));
           return Promise.reject({
               body: 'Header key mismatch.',
               statusCode: 417,
@@ -88,7 +89,7 @@ const requestHandler = (request, response) => {
       } 
     }
   }).then(async () => {
-    debug('parsing json');
+    debug(MESSAGES.PARSING_JSON);
     try {
       if (_config.reqBodyLimit) {
         jsonParser = promisify(bodyParser.json({ limit: _config.reqBodyLimit }));
@@ -103,13 +104,13 @@ const requestHandler = (request, response) => {
         locale = body.data.locale;
       }
       debug('_config.listener.actions[type]', _config.listener.actions[type]);
-      debug('event', event);
+      debug(MESSAGES.EVENT, event);
       // validate event:type
       if (
         !_config.listener.actions[type] ||
         _config.listener.actions[type].indexOf(event) === -1
       ) {
-        debug(`${event}:${type} not defined for processing`);
+        debug(MESSAGES.EVENT_NOT_DEFINED(event, type));
         return Promise.reject({
           body: `${event}:${type} not defined for processing`,
           statusCode: 403,
@@ -137,9 +138,9 @@ const requestHandler = (request, response) => {
       }
       data.event = event;
       _notify(data).then((data) => {
-        debug('Data [_notify]', data);
+        debug(MESSAGES.DATA_RECEIVED_NOTIFY, data);
       }).catch((error) => {
-        debug('Error [_notify]', error);
+        debug(MESSAGES.ERROR_OCCURRED_NOTIFY, error);
       });
       return Promise.resolve({ statusCode: 200, statusMessage: 'OK', body: data });
     } catch (err) {
@@ -150,7 +151,7 @@ const requestHandler = (request, response) => {
       });
     }
   }).then((value) => {
-    debug('Value', value);
+    debug(MESSAGES.VALUE, value);
     response.setHeader('Content-Type', 'application/json');
     response.statusCode = value.statusCode;
     response.statusMessage = value.statusMessage;
@@ -162,7 +163,7 @@ const requestHandler = (request, response) => {
     response.end(JSON.stringify(safeBody));
     return;
   }).catch((error) => {
-    debug('Error', error);
+    debug(MESSAGES.ERROR, error);
     const safeError = {
       statusCode: error.statusCode || 500,
       statusMessage: error.statusMessage || 'Internal Server Error',
