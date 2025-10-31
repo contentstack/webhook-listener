@@ -36,7 +36,7 @@ const requestHandler = (request, response) => {
     if (request.method && request.method !== 'POST') {
       debug(MESSAGES.ONLY_POST_SUPPORTED);
       return Promise.reject({
-        body: `Only POST call is supported.`,
+        body: `Only POST requests are supported.`,
         statusCode: 400,
         statusMessage: 'Not allowed',
       });
