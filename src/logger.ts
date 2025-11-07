@@ -1,4 +1,5 @@
 import { Console } from 'console';
+import { MESSAGES } from './messages';
 
 let logger;
 logger = new Console(process.stdout, process.stderr);
@@ -11,10 +12,10 @@ logger = new Console(process.stdout, process.stderr);
 function setLogger(customLogger) {
     const validator = validateLogger(customLogger);
     if (!validator) {
-        console.warn('Failed to register logger, using console for logging.');
+        console.warn(MESSAGES.LOGGER_REGISTRATION_FAILED);
     } else {
         logger = customLogger;
-        logger.info('Logger registered successfully.');
+        logger.info(MESSAGES.LOGGER_REGISTERED_SUCCESS);
     }
 }
 
@@ -26,7 +27,7 @@ const validateLogger = (instance) => {
     const requiredFn = ['info', 'warn', 'log', 'error', 'debug'];
     requiredFn.forEach((name) => {
       if (typeof instance[name] !== 'function') {
-        console.warn(`Unable to register custom logger since '${name}()' does not exist on ${instance}!`);
+        console.warn(MESSAGES.UNABLE_TO_REGISTER_LOGGER(name, instance));
         flag = true;
       }
     });
