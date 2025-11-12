@@ -101,7 +101,7 @@ describe("Test start method without user config.", () => {
       .then(response => {
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Only POST call is supported.",
+          "Only POST requests are supported.",
         );
       });
   });
@@ -147,7 +147,7 @@ describe("Test start method with custom logger", () => {
   });
 });
 
-describe("Test start method with invalid user config", async () => {
+describe("Test start method with invalid user config", () => {
   test("It should throw error when endpoint in config set to number", () => {
     let config;
     register(notify);
@@ -160,7 +160,7 @@ describe("Test start method with invalid user config", async () => {
     start(config)
       .then(svr => {})
       .catch(error => {
-        expect(error.message).toBe("Please provide valide listener.endpoint");
+        expect(error.message).toBe("Please provide a valid listener endpoint.");
       });
   });
 
@@ -176,7 +176,7 @@ describe("Test start method with invalid user config", async () => {
     start(config)
       .then(svr => {})
       .catch(error => {
-        expect(error.message).toBe("Please provide valide listener.port");
+        expect(error.message).toBe("Please provide a valid listener port.");
       });
   });
 });
@@ -223,7 +223,7 @@ describe("Test start method with user config", () => {
       .then(response => {
         expect(response.statusCode).toBe(400);
         expect(response.body.error.message).toBe(
-          "Only POST call is supported.",
+          "Only POST requests are supported.",
         );
       });
   });
