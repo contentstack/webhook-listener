@@ -186,7 +186,7 @@ function handleServerReconnection() {
     // Longer delays for persistent issues (30s) + random delay
     delay = 30000 + Math.random() * 10000;
     // Reset counter every 10 attempts to give fresh chances
-    if (reconnectAttempts >= 10) {
+    if (reconnectAttempts > 10) {
       log.info('Resetting reconnection counter for fresh attempts');
       reconnectAttempts = 0;
     }
