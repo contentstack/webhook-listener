@@ -28,5 +28,12 @@ export const defaultConfig = {
         'delete',
       ],
     },
+    // Enhanced error handling and reconnection settings
+    reconnection: {
+      enabled: true,
+      maxAttempts: 5,
+      initialDelay: 5000, // 5 seconds
+      maxDelay: 60000,    // 60 seconds
+    },
   },
 };
