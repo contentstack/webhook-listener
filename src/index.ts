@@ -20,9 +20,6 @@ let config: any = {};
 let appConfig: any = defaultConfig;
 let server: any = null;
 let reconnectAttempts = 0;
-const maxReconnectAttempts = 10; // After this, switch to long-term retry
-const reconnectDelay = 5000; // 5 seconds
-const longTermRetryDelay = 30000; // 30 seconds for persistent retries
 let isShuttingDown = false;
 let isInLongTermRetry = false;
 const emitter = new EventEmitter();
@@ -174,19 +171,24 @@ function handleServerReconnection() {
   
   reconnectAttempts++;
   
+  // Get config values with fallbacks at runtime
+  const maxReconnectAttempts = appConfig.listener?.reconnection?.maxAttempts || 10;
+  const reconnectDelay = appConfig.listener?.reconnection?.initialDelay || 15000;
+  const longTermRetryDelay = appConfig.listener?.reconnection?.maxDelay || 60000;
+  
   // Use shorter delays and reset counter more frequently
   let delay;
   if (reconnectAttempts <= 3) {
     // Quick retries for first 3 attempts (2s, 4s, 8s) + small random delay to avoid port conflicts
     delay = Math.min(2000 * Math.pow(2, reconnectAttempts - 1), 8000) + Math.random() * 1000;
-  } else if (reconnectAttempts <= 10) {
-    // Medium delays for attempts 4-10 (15s) + random delay
-    delay = 15000 + Math.random() * 5000;
+  } else if (reconnectAttempts <= maxReconnectAttempts) {
+    // Medium delays for attempts 4-maxAttempts + random delay
+    delay = reconnectDelay + Math.random() * 5000;
   } else {
-    // Longer delays for persistent issues (30s) + random delay
-    delay = 30000 + Math.random() * 10000;
-    // Reset counter every 10 attempts to give fresh chances
-    if (reconnectAttempts > 10) {
+    // Longer delays for persistent issues + random delay
+    delay = longTermRetryDelay + Math.random() * 10000;
+    // Reset counter every maxReconnectAttempts to give fresh chances
+    if (reconnectAttempts > maxReconnectAttempts) {
       log.info('Resetting reconnection counter for fresh attempts');
       reconnectAttempts = 0;
     }
