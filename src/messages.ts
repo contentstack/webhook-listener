@@ -9,7 +9,7 @@
 /**
  * Centralized messages for the webhook listener.
  * This file contains all log messages, debug messages, and error messages
- * used throughout the application.
+ * used throughout the application, including enhanced error handling and reconnection messages.
  */
 
 export const MESSAGES = {
@@ -50,5 +50,20 @@ export const MESSAGES = {
   LOGGER_REGISTERED_SUCCESS: 'Logger registered successfully.',
   UNABLE_TO_REGISTER_LOGGER: (name: string, instance: any) => 
     `Unable to register custom logger: '${name}()' does not exist on ${instance}.`,
+    
+  // Enhanced error handling and reconnection messages
+  SERVER_ERROR: (message: string, code: string) => 
+    `Webhook server error: ${message} (${code || 'NO_CODE'})`,
+  CLIENT_ERROR: (message: string) => 
+    `Webhook client error: ${message}`,
+  SERVER_CLOSED: 'Webhook server closed unexpectedly.',
+  SERVER_RECONNECTING: (attempt: number, maxAttempts: number) => 
+    `Attempting to reconnect webhook server (${attempt}/${maxAttempts})...`,
+  RECONNECT_DELAY: (delay: number) => 
+    `Waiting ${delay}ms before reconnection attempt...`,
+  RECONNECT_SUCCESS: 'Webhook server reconnected successfully.',
+  RECONNECT_FAILED: (error: string) => 
+    `Webhook server reconnection failed: ${error}`,
+  SERVER_SHUTDOWN_COMPLETE: 'Webhook server shutdown completed.',
 };
 

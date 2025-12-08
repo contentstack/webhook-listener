@@ -10,7 +10,6 @@ import BasicAuth from 'basic-auth';
 import * as bodyParser from 'body-parser';
 import { debug as Debug } from 'debug';
 import { createServer } from 'http';
-import { promisify } from 'util';
 import { logger as log } from './logger';
 import { MESSAGES } from './messages';
 
@@ -19,14 +18,37 @@ let _config: any = {};
 let _notify: any;
 const debug = Debug('webhook:listener');
 
-let jsonParser = promisify(bodyParser.json({ limit: '1mb' }));
+let jsonParser = bodyParser.json({ limit: '1mb' });
 /**
- * Handle requests
+ * Handle requests with enhanced error handling for socket issues
  * @param {Object} request request object
  * @param {Object} response response object
  */
 const requestHandler = (request, response) => {
-
+  // Set up error handling for the request/response cycle
+  const handleSocketError = (error) => {
+    debug('Socket error in request handler:', error);
+    if (!response.headersSent) {
+      try {
+        response.statusCode = 500;
+        response.statusMessage = 'Internal Server Error';
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify({ error: { message: 'Connection error occurred' } }));
+      } catch (writeError) {
+        debug('Failed to send error response:', writeError);
+      }
+    }
+  };
+  
+  // Handle socket hang up and connection reset errors
+  request.on('error', handleSocketError);
+  response.on('error', handleSocketError);
+  
+  // Handle client disconnect
+  request.on('close', () => {
+    debug('Client disconnected during request processing');
+  });
+  
   log.info(MESSAGES.REQUEST_RECEIVED);
   debug('_config', _config);
   // Explicitly remove or override the X-Powered-By header
@@ -92,9 +114,17 @@ const requestHandler = (request, response) => {
     debug(MESSAGES.PARSING_JSON);
     try {
       if (_config.reqBodyLimit) {
-        jsonParser = promisify(bodyParser.json({ limit: _config.reqBodyLimit }));
+        jsonParser = bodyParser.json({ limit: _config.reqBodyLimit });
       }
-      await jsonParser(request, response);
+      await new Promise((resolve, reject) => {
+        jsonParser(request, response, (err) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(undefined);
+          }
+        });
+      });
       const body = request.body;
       const type = body.module;
       const event = body.event;
@@ -137,10 +167,13 @@ const requestHandler = (request, response) => {
           break;
       }
       data.event = event;
+      // Enhanced error handling for notify function
       _notify(data).then((data) => {
         debug(MESSAGES.DATA_RECEIVED_NOTIFY, data);
       }).catch((error) => {
-        debug(MESSAGES.ERROR_OCCURRED_NOTIFY, error);
+        log.error(MESSAGES.ERROR_OCCURRED_NOTIFY, error);
+        debug('Notify function error details:', error);
+        // Don't fail the request if notify fails - webhook should still return success
       });
       return Promise.resolve({ statusCode: 200, statusMessage: 'OK', body: data });
     } catch (err) {
@@ -152,31 +185,54 @@ const requestHandler = (request, response) => {
     }
   }).then((value) => {
     debug(MESSAGES.VALUE, value);
-    response.setHeader('Content-Type', 'application/json');
-    response.statusCode = value.statusCode;
-    response.statusMessage = value.statusMessage;
-    // Example: Return only safe fields
-    const safeBody = {
-      data: value.body?.data || value?.body || null
-    };
+    
+    // Check if response is still writable before sending
+    if (!response.headersSent && !response.destroyed) {
+      try {
+        response.setHeader('Content-Type', 'application/json');
+        response.statusCode = value.statusCode;
+        response.statusMessage = value.statusMessage;
+        // Example: Return only safe fields
+        const safeBody = {
+          data: value.body?.data || value?.body || null
+        };
 
-    response.end(JSON.stringify(safeBody));
+        response.end(JSON.stringify(safeBody));
+      } catch (writeError) {
+        debug('Failed to send success response:', writeError);
+      }
+    }
     return;
   }).catch((error) => {
     debug(MESSAGES.ERROR, error);
-    const safeError = {
-      statusCode: error.statusCode || 500,
-      statusMessage: error.statusMessage || 'Internal Server Error',
-      body: typeof error.body === 'string' 
-      ? error.body 
-      : (typeof error.body === 'object' && error.body !== null
-          ? JSON.stringify(error.body)
-          : 'An unexpected error occurred.'),    
-    };
-    response.setHeader('Content-Type', 'application/json');
-    response.statusCode = error.statusCode;
-    response.statusMessage = error.statusMessage;
-    response.end(JSON.stringify({ error: { message: safeError.body } }));
+    
+    // Enhanced error response handling
+    if (!response.headersSent && !response.destroyed) {
+      try {
+        const safeError = {
+          statusCode: error.statusCode || 500,
+          statusMessage: error.statusMessage || 'Internal Server Error',
+          body: typeof error.body === 'string' 
+          ? error.body 
+          : (typeof error.body === 'object' && error.body !== null
+              ? JSON.stringify(error.body)
+              : 'An unexpected error occurred.'),    
+        };
+        
+        response.setHeader('Content-Type', 'application/json');
+        response.statusCode = safeError.statusCode;
+        response.statusMessage = safeError.statusMessage;
+        response.end(JSON.stringify({ error: { message: safeError.body } }));
+      } catch (writeError) {
+        debug('Failed to send error response:', writeError);
+        // Last resort - try to close the connection
+        try {
+          response.destroy();
+        } catch (destroyError) {
+          debug('Failed to destroy response:', destroyError);
+        }
+      }
+    }
     return;
   });
 };
