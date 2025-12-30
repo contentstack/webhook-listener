@@ -177,8 +177,12 @@ const requestHandler = (request, response) => {
       });
       return Promise.resolve({ statusCode: 200, statusMessage: 'OK', body: data });
     } catch (err) {
+      // Log the full error internally for debugging
+      log.error('Error processing request:', err);
+      
+      // Return only safe, generic error message to client
       return Promise.reject({
-        body: err,
+        body: 'Failed to process request',
         statusCode: 500,
         statusMessage: 'Internal Error',
       });
@@ -222,7 +226,7 @@ const requestHandler = (request, response) => {
         response.setHeader('Content-Type', 'application/json');
         response.statusCode = safeError.statusCode;
         response.statusMessage = safeError.statusMessage;
-        response.end(JSON.stringify({ error: { message: safeError.body } }));
+        response.end();
       } catch (writeError) {
         debug('Failed to send error response:', writeError);
         // Last resort - try to close the connection
