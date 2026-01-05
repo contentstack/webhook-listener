@@ -1,6 +1,6 @@
 {
   "name": "@contentstack/webhook-listener",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "HTTP web server that listens to Contentstack webhooks. This is part of Contentstack DataSync",
   "main": "./dist",
   "types": "./typings",
@@ -36,7 +36,7 @@
   "license": "MIT",
   "dependencies": {
     "basic-auth": "^2.0.1",
-    "body-parser": "^1.20.3",
+    "body-parser": "^2.2.1",
     "debug": "^4.3.5",
     "lodash": "^4.17.21"
   },
