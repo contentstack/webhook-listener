@@ -147,9 +147,25 @@ function createNewServer(resolve: Function, reject: Function) {
       log.error(MESSAGES.SERVER_ERROR(error.message, error.code));
       debug('Server error details:', error);
       
-      // For all errors (including EADDRINUSE), reject and let reconnection logic handle it
       if (!isShuttingDown) {
         emitter.emit('server-error', error);
+        
+        // FIX: Actually trigger reconnection for network errors
+        if (isNetworkError(error)) {
+          log.warn(MESSAGES.SERVER_RECONNECTING(reconnectAttempts + 1, 
+            appConfig.listener?.reconnection?.maxAttempts || 10));
+          
+          // Close the failed server first to prevent resource leaks
+          if (serverInstance && serverInstance.listening) {
+            serverInstance.close(() => {
+              debug('Failed server closed, triggering reconnection');
+            });
+          }
+          
+          // Trigger automatic reconnection
+          handleServerReconnection();
+          return; // Don't reject, let reconnection handle recovery
+        }
       }
       reject(error);
     });
@@ -219,18 +235,23 @@ function handleServerReconnection() {
  */
 function isNetworkError(error: any): boolean {
   const networkErrorCodes = [
-    'ECONNRESET',
-    'ECONNREFUSED', 
-    'ETIMEDOUT',
-    'ENOTFOUND',
-    'EHOSTUNREACH',
-    'EPIPE',
-    'EADDRINUSE'
+    'ECONNRESET',     // Connection reset by peer (socket hang up)
+    'ECONNREFUSED',   // Connection refused
+    'ETIMEDOUT',      // Connection timeout
+    'ENOTFOUND',      // DNS resolution failed
+    'EHOSTUNREACH',   // Host unreachable
+    'EPIPE',          // Broken pipe
+    'EADDRINUSE',     // Address already in use
+    'ECONNABORTED',   // Connection aborted
+    'ENETDOWN',       // Network is down
+    'ENETUNREACH'     // Network unreachable
   ];
   
   return networkErrorCodes.includes(error.code) || 
          error.message?.includes('socket hang up') ||
-         error.message?.includes('connection reset');
+         error.message?.includes('connection reset') ||
+         error.message?.includes('ECONNRESET') ||
+         error.message?.includes('Connection lost');
 }
 
 
