@@ -39,7 +39,7 @@
     "basic-auth": "^2.0.1",
     "body-parser": "^2.2.2",
     "debug": "^4.3.5",
-    "lodash": "4.17.23"
+    "lodash": "4.18.1"
   },
   "devDependencies": {
     "husky": "^9.1.7",
