@@ -22,3 +22,8 @@ example/logs
 !dist/**
 !.talismanrc
 !SECURITY.md
+!AGENTS.md
+!.cursor
+!.cursor/**
+!skills
+!skills/**
