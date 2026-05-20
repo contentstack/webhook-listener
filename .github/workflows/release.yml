@@ -1,54 +1,24 @@
-name: Release
-on:
-  push:
-    branches:
-      - master
-jobs:
-  build:
-    name: Build and upload
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: npm run build-ts
-      - name: Upload dist
-        uses: actions/upload-artifact@v4
-        with:
-          name: dist
-          path: dist
+# This workflow will publish a package to GitHub Packages when a release is created
+# For more information see: https://help.github.com/actions/language-and-framework-guides/publishing-nodejs-packages
 
+name: Publish package to NPM repository
+on:
   release:
-    name: Download dist and release
+    types: [created]
+
+jobs:
+  publish-npm:
     runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+          ref: ${{ github.event.release.tag_name }}
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm install
-      - name: Download dist
-        uses: actions/download-artifact@v4
-        with:
-          name: dist
-          path: dist
-      - name: Display structure of downloaded files
-        run: ls -R
-      - name: Release
-        uses: JS-DevTools/npm-publish@v2.2.1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
+          node-version: "22.x"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci
+      - run: npm run build-ts
+      - run: npm publish --tag latest --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
